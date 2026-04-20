@@ -1,0 +1,269 @@
+<div class="home-container">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <h1 class="logo">Association Front Office</h1>
+      <nav class="nav-menu">
+        <a href="#presentation">Présentation</a>
+        <a href="#annuaire">Annuaire</a>
+        <a href="#actualites">Actualités</a>
+        <a href="#partenaires">Partenaires</a>
+        <a href="#calendrier">Événements</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h2>Bienvenue sur notre plateforme</h2>
+      <p>Découvrez nos actualités, événements et rejoignez notre communauté</p>
+    </div>
+  </section>
+
+  <!-- Section Présentation -->
+  <section id="presentation" class="section">
+    <div class="container">
+      <h2>Qui sommes-nous ?</h2>
+      <div class="presentation-content">
+        <div class="historique">
+          <h3>Historique</h3>
+          <p>Fondée en 2010, notre association œuvre pour le développement communautaire et l'entraide. 
+          Au fil des années, nous avons touché des milliers de vies à travers nos différents programmes 
+          et initiatives.</p>
+        </div>
+        <div class="missions">
+          <h3>Nos Missions</h3>
+          <ul>
+            <li>🤝 Soutien aux personnes dans le besoin</li>
+            <li>📚 Éducation et formation</li>
+            <li>🌱 Développement durable</li>
+            <li>🎨 Promotion culturelle</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mot de la présidente -->
+  <section class="section bg-light">
+    <div class="container">
+      <h2>Mot de la Présidente</h2>
+      <div class="mot-president">
+        <div class="president-photo">
+          <div class="avatar-placeholder">👩‍💼</div>
+        </div>
+        <div class="president-message">
+          <p class="message">"Chers membres et partenaires,</p>
+          <p>C'est avec une grande fierté que je vous accueille sur notre nouvelle plateforme. 
+          Ensemble, continuons à bâtir une communauté solidaire et dynamique. Votre engagement 
+          est la clé de notre succès collectif."</p>
+          <p class="signature">- Marie Dupont, Présidente</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Annuaire des membres -->
+  <section id="annuaire" class="section">
+    <div class="container">
+      <h2>Annuaire des Membres</h2>
+      <div class="annuaire-filter">
+        <input type="text" placeholder="Rechercher un membre..." class="search-input">
+      </div>
+      <div class="membres-grid">
+        <!-- Les membres seront chargés dynamiquement -->
+        <div class="member-card">
+          <div class="member-avatar">👤</div>
+          <h3>Jean Martin</h3>
+          <p>Président</p>
+          <div class="member-contact">
+            <small>📧 jean.martin&#64;email.com</small>
+            <small>📞 +261 32 12 345 67</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Album Photo -->
+  <section id="album" class="section bg-light">
+    <div class="container">
+      <h2>Album Mémoires</h2>
+      <div class="photo-gallery">
+        <div class="photo-item">
+          <div class="photo-placeholder">📸</div>
+          <p>Événement 2024</p>
+        </div>
+        <div class="photo-item">
+          <div class="photo-placeholder">📸</div>
+          <p>Rencontre annuelle</p>
+        </div>
+        <div class="photo-item">
+          <div class="photo-placeholder">📸</div>
+          <p>Atelier formation</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Formulaire Partenaires -->
+  <section id="partenaires" class="section">
+    <div class="container">
+      <h2>Devenir Partenaire</h2>
+      <div class="partenaires-container">
+        <div class="partenaires-form">
+          <form #partenaireForm="ngForm">
+            <div class="form-group">
+              <input type="text" name="nom" ngModel placeholder="Nom de l'organisation" required>
+            </div>
+            <div class="form-group">
+              <input type="text" name="adresse" ngModel placeholder="Adresse" required>
+            </div>
+            <div class="form-group">
+              <input type="email" name="email" ngModel placeholder="Email" required>
+            </div>
+            <div class="form-group">
+              <input type="tel" name="telephone" ngModel placeholder="Téléphone/WhatsApp" required>
+            </div>
+            <div class="form-group">
+              <textarea name="motifs" ngModel placeholder="Motifs/Attentes" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Envoyer la demande</button>
+          </form>
+        </div>
+        <div class="partenaires-list">
+          <h3>Nos Partenaires</h3>
+          <div class="partner-item">
+            <div class="partner-logo">🏢</div>
+            <div class="partner-info">
+              <strong>Entreprise ABC</strong>
+              <small>Partenaire depuis 2023</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Actualités -->
+  <section id="actualites" class="section bg-light">
+    <div class="container">
+      <h2>Actualités</h2>
+      <div class="actualites-list">
+        <div *ngFor="let actualite of actualites" class="actualite-card">
+          <div class="actualite-header">
+            <div class="actualite-photo">📰</div>
+            <div class="actualite-info">
+              <h3>{{actualite.titre}}</h3>
+              <span class="date">{{actualite.date | date:'dd/MM/yyyy'}}</span>
+            </div>
+          </div>
+          <p class="actualite-description">{{actualite.description}}</p>
+          
+          <!-- Réactions -->
+         <div class="reactions">
+            <button class="reaction-btn">👍 Like ({{getReactionCount(actualite, 'like')}})</button>
+            <button class="reaction-btn">❤️ Love ({{getReactionCount(actualite, 'love')}})</button>
+            <button class="reaction-btn">🤝 Support ({{getReactionCount(actualite, 'support')}})</button>
+            <button class="share-btn" (click)="shareActualite(actualite)">🔗 Partager</button>
+         </div>
+          
+          <!-- Commentaires -->
+          <div class="commentaires">
+            <div *ngFor="let comment of actualite.commentaires" class="commentaire">
+              <div class="comment-content">
+                <p><strong>Anonyme:</strong> {{comment.contenu}}</p>
+                <small class="comment-date">{{comment.date | date:'dd/MM/yyyy HH:mm'}}</small>
+                <div *ngIf="comment.reponseAdmin" class="admin-response">
+                  <strong>👩‍💼 Réponse de l'admin:</strong> {{comment.reponseAdmin}}
+                </div>
+              </div>
+            </div>
+            <div class="add-comment">
+              <textarea 
+                [(ngModel)]="commentTexts[actualite.id || 0]" 
+                placeholder="Ajouter un commentaire..." 
+                rows="2"
+                (keyup.enter)="addCommentaire(actualite.id || 0)"></textarea>
+              <button class="btn-comment" (click)="addCommentaire(actualite.id || 0)">Commenter</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Calendrier -->
+  <section id="calendrier" class="section">
+    <div class="container">
+      <h2>Calendrier des Événements</h2>
+      <div class="calendar-events">
+        <div *ngFor="let event of events" class="event-item" [style.border-left-color]="event.couleur || '#3498db'">
+          <div class="event-date">
+            <span class="event-day">{{event.date | date:'dd'}}</span>
+            <span class="event-month">{{event.date | date:'MMM'}}</span>
+          </div>
+          <div class="event-details">
+            <h4>{{event.titre}}</h4>
+            <p>{{event.description}}</p>
+            <small>📍 {{event.lieu}}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Search Results Modal -->
+  <div *ngIf="showSearchResults" class="search-modal">
+    <div class="search-modal-content">
+      <span class="close-btn" (click)="closeSearchResults()">&times;</span>
+      <h3>Résultats pour "{{searchKeyword}}"</h3>
+      
+      <div *ngIf="searchResults.membres.length > 0">
+        <h4>Membres trouvés ({{searchResults.membres.length}})</h4>
+        <div *ngFor="let membre of searchResults.membres" class="search-result-item">
+          {{membre.prenom}} {{membre.nom}} - {{membre.poste}}
+        </div>
+      </div>
+
+      <div *ngIf="searchResults.actualites.length > 0">
+        <h4>Actualités trouvées ({{searchResults.actualites.length}})</h4>
+        <div *ngFor="let actu of searchResults.actualites" class="search-result-item">
+          <strong>{{actu.titre}}</strong> - {{actu.description | slice:0:100}}
+        </div>
+      </div>
+
+      <div *ngIf="searchResults.membres.length === 0 && searchResults.actualites.length === 0">
+        <p>Aucun résultat trouvé</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Contact</h4>
+        <p>📞 +261 32 12 345 67 (Téléphone/WhatsApp)</p>
+        <p>✉️ contact&#64;association.org</p>
+        <p>📍 Antananarivo, Madagascar</p>
+      </div>
+      <div class="footer-section">
+        <h4>Suivez-nous</h4>
+        <p>Facebook: /association</p>
+        <p>Twitter: &#64;association</p>
+        <p>Instagram: &#64;association</p>
+      </div>
+      <div class="footer-section">
+        <h4>Liens utiles</h4>
+        <a href="#">Mentions légales</a>
+        <a href="#">Politique de confidentialité</a>
+        <a href="#">CGU</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 Association Front Office. Tous droits réservés.</p>
+    </div>
+  </footer>
+</div>
