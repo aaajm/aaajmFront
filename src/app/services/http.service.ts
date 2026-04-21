@@ -1,5 +1,6 @@
+import {ToastService} from '@/app/utils';
 import {HttpErrorResponse} from '@angular/common/http';
-import {Injectable, signal} from '@angular/core';
+import {inject, Injectable, signal} from '@angular/core';
 import {firstValueFrom, Observable} from 'rxjs';
 
 export interface HttpState<T> {
@@ -16,6 +17,7 @@ interface RequestOptions<T> {
 
 @Injectable({providedIn: 'root'})
 export class HttpStateService<T> {
+  toast = inject(ToastService);
   data = signal<T | null>(null);
   isLoading = signal(false);
   error = signal<string | null>(null);
@@ -46,6 +48,7 @@ export class HttpStateService<T> {
     }
   }
   private handleError(error: HttpErrorResponse) {
-    //TODO: toast error
+    this.toast.message('error', 'Error', error.message);
+    this.error.set(error.message);
   }
 }
