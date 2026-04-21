@@ -1,8 +1,8 @@
+import {Actualite, Commentaire, Event, Member} from '@/app/models';
+import {ApiService} from '@/app/services';
 import {CommonModule} from '@angular/common';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {Actualite, Commentaire, Event, Member} from '../../models/models';
-import {ApiService} from '../../services/api.service';
 
 @Component({
   selector: 'app-home',
