@@ -63,7 +63,12 @@
               "buildTarget": "aaajmFront:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "prebundle": {
+              "exclude": ["@aaajm/client"]
+            }
+          }
         },
         "test": {
           "builder": "@angular/build:unit-test"
