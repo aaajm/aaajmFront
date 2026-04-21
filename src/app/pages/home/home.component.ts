@@ -1,30 +1,30 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ApiService } from '../../services/api.service';
-import { Actualite, Event, Member, Commentaire } from '../../models/models';
+import {CommonModule} from '@angular/common';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {Actualite, Commentaire, Event, Member} from '../../models/models';
+import {ApiService} from '../../services/api.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
   actualites: Actualite[] = [];
   events: Event[] = [];
   searchKeyword: string = '';
-  searchResults: { membres: Member[]; actualites: Actualite[] } = {
+  searchResults: {membres: Member[]; actualites: Actualite[]} = {
     membres: [],
-    actualites: []
+    actualites: [],
   };
   showSearchResults: boolean = false;
   currentDate: Date = new Date();
-  
+
   // Pour les commentaires
-  commentTexts: { [key: number]: string } = {};
-  showCommentForm: { [key: number]: boolean } = {};
+  commentTexts: {[key: number]: string} = {};
+  showCommentForm: {[key: number]: boolean} = {};
 
   constructor(private apiService: ApiService) {}
 
@@ -46,7 +46,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         console.error('Error loading actualites:', error);
         // Données mockées pour le développement
         this.actualites = this.getMockActualites();
-      }
+      },
     });
   }
 
@@ -59,7 +59,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         console.error('Error loading events:', error);
         // Données mockées pour le développement
         this.events = this.getMockEvents();
-      }
+      },
     });
   }
 
@@ -72,9 +72,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Error searching membres:', error);
           this.searchResults.membres = this.getMockMembres();
-        }
+        },
       });
-      
+
       this.apiService.searchActualites(this.searchKeyword).subscribe({
         next: (actualites) => {
           this.searchResults.actualites = actualites;
@@ -84,27 +84,30 @@ export class HomeComponent implements OnInit, OnDestroy {
           console.error('Error searching actualites:', error);
           this.searchResults.actualites = this.actualites;
           this.showSearchResults = true;
-        }
+        },
       });
     } else {
       this.showSearchResults = false;
-      this.searchResults = { membres: [], actualites: [] };
+      this.searchResults = {membres: [], actualites: []};
     }
   }
 
   closeSearchResults() {
     this.showSearchResults = false;
     this.searchKeyword = '';
-    this.searchResults = { membres: [], actualites: [] };
+    this.searchResults = {membres: [], actualites: []};
   }
 
   shareActualite(actualite: Actualite) {
     const url = `${window.location.origin}/#actualite-${actualite.id}`;
-    navigator.clipboard.writeText(url).then(() => {
-      alert('Lien copié dans le presse-papier !');
-    }).catch(() => {
-      alert('Partagez ce lien : ' + url);
-    });
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        alert('Lien copié dans le presse-papier !');
+      })
+      .catch(() => {
+        alert('Partagez ce lien : ' + url);
+      });
   }
 
   addCommentaire(actualiteId: number) {
@@ -114,7 +117,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       actualiteId: actualiteId,
       contenu: this.commentTexts[actualiteId],
       date: new Date(),
-      estReponseAdmin: false
+      estReponseAdmin: false,
     };
 
     this.apiService.addCommentaire(commentaire).subscribe({
@@ -125,14 +128,14 @@ export class HomeComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error adding comment:', error);
-        alert('Erreur lors de l\'ajout du commentaire');
-      }
+        alert("Erreur lors de l'ajout du commentaire");
+      },
     });
   }
 
   getReactionCount(actualite: Actualite, type: string): number {
     if (!actualite.reactions) return 0;
-    return actualite.reactions.filter(r => r.type === type).length;
+    return actualite.reactions.filter((r) => r.type === type).length;
   }
 
   // Données mockées pour le développement
@@ -141,7 +144,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       {
         id: 1,
         titre: 'Grande collecte de fonds',
-        description: 'Notre association organise une grande collecte de fonds pour soutenir les enfants défavorisés. Rejoignez-nous dans cette noble cause !',
+        description:
+          'Notre association organise une grande collecte de fonds pour soutenir les enfants défavorisés. Rejoignez-nous dans cette noble cause !',
         date: new Date(),
         commentaires: [
           {
@@ -149,21 +153,28 @@ export class HomeComponent implements OnInit, OnDestroy {
             actualiteId: 1,
             contenu: 'Très belle initiative !',
             date: new Date(),
-            estReponseAdmin: false
-          }
+            estReponseAdmin: false,
+          },
         ],
         reactions: [
-          { id: 1, actualiteId: 1, fingerprint: 'xxx', type: 'like', date: new Date() }
-        ]
+          {
+            id: 1,
+            actualiteId: 1,
+            fingerprint: 'xxx',
+            type: 'like',
+            date: new Date(),
+          },
+        ],
       },
       {
         id: 2,
         titre: 'Atelier de formation',
-        description: 'Atelier gratuit sur le développement personnel et professionnel. Inscrivez-vous rapidement !',
+        description:
+          'Atelier gratuit sur le développement personnel et professionnel. Inscrivez-vous rapidement !',
         date: new Date(),
         commentaires: [],
-        reactions: []
-      }
+        reactions: [],
+      },
     ];
   }
 
@@ -175,7 +186,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         description: 'Réunion annuelle des membres',
         date: new Date(2026, 4, 25),
         lieu: 'Salle de conférence',
-        couleur: '#3498db'
+        couleur: '#3498db',
       },
       {
         id: 2,
@@ -183,8 +194,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         description: 'Soirée de collecte de fonds',
         date: new Date(2026, 5, 10),
         lieu: 'Hôtel Carlton',
-        couleur: '#e74c3c'
-      }
+        couleur: '#e74c3c',
+      },
     ];
   }
 
@@ -197,7 +208,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         adresse: 'Antananarivo',
         telephone: '0321234567',
         poste: 'Président',
-        email: 'jean.martin@email.com'
+        email: 'jean.martin@email.com',
       },
       {
         id: 2,
@@ -206,8 +217,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         adresse: 'Antananarivo',
         telephone: '0327654321',
         poste: 'Secrétaire',
-        email: 'marie.rakoto@email.com'
-      }
+        email: 'marie.rakoto@email.com',
+      },
     ];
   }
 }

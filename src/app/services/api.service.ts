@@ -1,10 +1,19 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Member, Partenaire, Actualite, Commentaire, Reaction, Event, PartenaireExterne, Photo } from '../models/models';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {
+  Actualite,
+  Commentaire,
+  Event,
+  Member,
+  Partenaire,
+  PartenaireExterne,
+  Photo,
+  Reaction,
+} from '../models/models';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
   private apiUrl = 'http://localhost:8080/api';
@@ -21,7 +30,9 @@ export class ApiService {
   }
 
   searchMembres(keyword: string): Observable<Member[]> {
-    return this.http.get<Member[]>(`${this.apiUrl}/membres/search?keyword=${keyword}`);
+    return this.http.get<Member[]>(
+      `${this.apiUrl}/membres/search?keyword=${keyword}`
+    );
   }
 
   // Partenaires (adhésion)
@@ -31,7 +42,9 @@ export class ApiService {
 
   // Partenaires externes (affichage)
   getPartenairesExternes(): Observable<PartenaireExterne[]> {
-    return this.http.get<PartenaireExterne[]>(`${this.apiUrl}/partenaires-externes`);
+    return this.http.get<PartenaireExterne[]>(
+      `${this.apiUrl}/partenaires-externes`
+    );
   }
 
   // Actualités
@@ -44,29 +57,45 @@ export class ApiService {
   }
 
   searchActualites(keyword: string): Observable<Actualite[]> {
-    return this.http.get<Actualite[]>(`${this.apiUrl}/actualites/search?keyword=${keyword}`);
+    return this.http.get<Actualite[]>(
+      `${this.apiUrl}/actualites/search?keyword=${keyword}`
+    );
   }
 
   addCommentaire(commentaire: Commentaire): Observable<Commentaire> {
-    return this.http.post<Commentaire>(`${this.apiUrl}/commentaires`, commentaire);
+    return this.http.post<Commentaire>(
+      `${this.apiUrl}/commentaires`,
+      commentaire
+    );
   }
 
-  addReponseAdmin(commentaireId: number, reponse: string): Observable<Commentaire> {
-    return this.http.put<Commentaire>(`${this.apiUrl}/commentaires/${commentaireId}/reponse`, { reponse });
+  addReponseAdmin(
+    commentaireId: number,
+    reponse: string
+  ): Observable<Commentaire> {
+    return this.http.put<Commentaire>(
+      `${this.apiUrl}/commentaires/${commentaireId}/reponse`,
+      {reponse}
+    );
   }
 
   addReaction(reaction: Reaction): Observable<Reaction> {
     return this.http.post<Reaction>(`${this.apiUrl}/reactions`, reaction);
   }
 
-  checkReactionExists(actualiteId: number, fingerprint: string): Observable<boolean> {
+  checkReactionExists(
+    actualiteId: number,
+    fingerprint: string
+  ): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/reactions/exists`, {
-      params: { actualiteId: actualiteId.toString(), fingerprint: fingerprint }
+      params: {actualiteId: actualiteId.toString(), fingerprint: fingerprint},
     });
   }
 
-  getReactionCounts(actualiteId: number): Observable<{ [key: string]: number }> {
-    return this.http.get<{ [key: string]: number }>(`${this.apiUrl}/reactions/counts/${actualiteId}`);
+  getReactionCounts(actualiteId: number): Observable<{[key: string]: number}> {
+    return this.http.get<{[key: string]: number}>(
+      `${this.apiUrl}/reactions/counts/${actualiteId}`
+    );
   }
 
   // Événements
@@ -84,6 +113,8 @@ export class ApiService {
   }
 
   getPhotosByCategorie(categorie: string): Observable<Photo[]> {
-    return this.http.get<Photo[]>(`${this.apiUrl}/photos/categorie/${categorie}`);
+    return this.http.get<Photo[]>(
+      `${this.apiUrl}/photos/categorie/${categorie}`
+    );
   }
 }

@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FingerprintService {
   private cachedFingerprint: string | null = null;
@@ -32,12 +32,12 @@ export class FingerprintService {
       touchSupport: 'ontouchstart' in window,
       deviceMemory: (navigator as any).deviceMemory || 0,
       hardwareConcurrency: navigator.hardwareConcurrency || 0,
-      maxTouchPoints: navigator.maxTouchPoints || 0
+      maxTouchPoints: navigator.maxTouchPoints || 0,
     };
 
     // Ajouter les plugins disponibles
     if (navigator.plugins) {
-      components.plugins = Array.from(navigator.plugins).map(p => p.name);
+      components.plugins = Array.from(navigator.plugins).map((p) => p.name);
     }
 
     return components;
@@ -48,6 +48,6 @@ export class FingerprintService {
     const data = encoder.encode(str);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
   }
 }
