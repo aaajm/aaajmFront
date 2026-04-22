@@ -1,0 +1,44 @@
+<section class="flex items-center py-20 bg-[#F8F9FA] p-10">
+  <div
+    class="container mx-auto flex {{screen.isMobile() ? 'flex-col-reverse' : 'flex-row'}}  items-center gap-12"
+  >
+    <div class="relative w-full max-w-xl min-w-56 isolate aspect-[8/5]">
+      <p-image
+        imageClass="object-cover rounded-xl"
+        src="https://primefaces.org/cdn/primeng/images/galleria/galleria10.jpg"
+        alt=" "
+      />
+      <div
+        class="absolute inset-0 border-2 border-pink-500 rounded-xl translate-x-6 translate-y-6 -z-10"
+      ></div>
+    </div>
+
+    <div class="flex flex-col">
+      <h2
+        class="relative text-3xl font-serif text-[#1F2937] mb-8 before:content-['““'] before:text-6xl before:font-serif before:opacity-50 before:absolute before:-top-10"
+      >
+        Mot de la Présidente
+      </h2>
+
+      <blockquote class="mb-8">
+        <p
+          class="text-xl lg:text-2xl font-serif italic leading-relaxed text-[#4B5563]"
+        >
+          "Notre engagement ne se limite pas à la conservation ; il s'agit de
+          faire résonner les voix du passé pour éclairer les défis de demain.
+          L'AAA JM est le pont entre l'héritage et l'innovation."
+        </p>
+      </blockquote>
+
+      <div class="flex items-center gap-4">
+        <div class="h-[2px] w-12 bg-[#9CA3AF]"></div>
+        <div>
+          <p class="font-bold text-[#1F2937] uppercase tracking-wider text-sm">
+            Hélène de Valois
+          </p>
+          <p class="text-[#6B7280] text-sm">Présidente actuelle de l'AAAJM</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
