@@ -1,0 +1,52 @@
+<header class="sticky top-0 z-50 bg-white border-b-2 border-gray-200">
+  <nav class="container mx-auto px-6 h-16 flex items-center justify-between">
+    <span class="text-2xl font-bold tracking-tighter text-archive-dark">
+      AAAJM
+    </span>
+
+    @if(!screen.isMobile()){
+    <div
+      class="flex items-center gap-8 text-sm uppercase tracking-widest text-gray-600"
+    >
+      @for (route of possibleRoutes; track $index) {
+      <a
+        [href]="route.url"
+        class="font-bold cursor-pointer hover:text-archive-dark hover:border-b-2 border-gray-500 {{currentUrl().startsWith(route.url) ? 'border-b-2':'' }}"
+      >
+        {{route.label}}
+      </a>
+      }
+    </div>
+    } @if (screen.isMobile()) {
+    <p-button icon="pi pi-bars" (click)="openDrawer()"></p-button>
+    }
+  </nav>
+</header>
+<p-drawer
+  [visible]="visibleDrawer()"
+  (onHide)="closeDrawer()"
+  (visibleChange)="visibleDrawer.set($event)"
+  [closable]="false"
+>
+  <div class="flex flex-col gap-10">
+    <span
+      class="text-2xl font-bold tracking-tighter text-archive-dark self-center"
+    >
+      AAAJM
+    </span>
+    <div>
+      <div
+        class="flex flex-col items-center gap-4 text-sm uppercase tracking-widest text-gray-600"
+      >
+        @for (route of possibleRoutes; track $index) {
+        <a
+          [href]="route.url"
+          class="font-bold cursor-pointer hover:text-archive-dark hover:border-b-2 border-gray-500 {{currentUrl().startsWith(route.url) ? 'border-b-2':'' }}"
+        >
+          {{route.label}}
+        </a>
+        }
+      </div>
+    </div>
+  </div>
+</p-drawer>
