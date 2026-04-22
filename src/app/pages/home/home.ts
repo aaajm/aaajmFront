@@ -1,9 +1,12 @@
+import {About} from '@/app/components/about';
+import {LeaderWord} from '@/app/components/leader-word';
+import {Mission} from '@/app/components/mission';
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'app-home',
-  imports: [],
+  selector: 'home-page',
+  standalone: true,
+  imports: [About, LeaderWord, Mission],
   templateUrl: './home.html',
-  styleUrl: './home.css',
 })
-export class Home {}
+export class HomePage {}
