@@ -39,6 +39,11 @@ export class Navbar {
       authorized: true,
     },
     {
+      url: '/member',
+      label: 'Nos membres',
+      authorized: true,
+    },
+    {
       url: '/album',
       label: 'Galerie',
       authorized: true,
