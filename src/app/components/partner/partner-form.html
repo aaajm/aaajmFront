@@ -1,0 +1,119 @@
+<section class="bg-slate-50 py-20 font-serif">
+  <div class="container mx-auto px-6 max-w-6xl">
+    <div class="flex flex-col lg:flex-row gap-16 items-start">
+      <div class="w-full lg:w-5/12 flex flex-col gap-8">
+        <div class="flex flex-col gap-4">
+          <h2 class="text-4xl font-bold text-teal-950 leading-tight">
+            Accompagne nous
+          </h2>
+          <p class="text-gray-500 text-xl leading-relaxed">
+            L'association est ouvert aux société, association ou individuel
+            sérieux à rejoindre notre mission.
+          </p>
+        </div>
+      </div>
+
+      <div class="w-full lg:w-7/12">
+        <div
+          class="bg-white p-10 rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-100"
+        >
+          <h3 class="text-2xl font-bold text-teal-950 mb-8">
+            Convention de partenariat
+          </h3>
+
+          <form
+            (submit)="submit()"
+            [formGroup]="partnerForm"
+            class="flex flex-col gap-6"
+          >
+            <div class="flex flex-col md:flex-row gap-6">
+              <p-inputgroup class="flex flex-col gap-2">
+                <label class="font-bold text-gray-600"
+                  >Raison social / Nom Complet</label
+                >
+                <input
+                  type="text"
+                  formControlName="name"
+                  pInputText
+                  [invalid]="zodErrors()['name']"
+                  placeholder="AAAJM / Jean Dupont"
+                  class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+                />
+                <small class="text-red-400 font-bold"
+                  >{{ zodErrors()['name'] }}</small
+                >
+              </p-inputgroup>
+              <p-inputgroup class="flex flex-col gap-2">
+                <label class="font-bold text-gray-600">Email Address</label>
+                <input
+                  type="email"
+                  formControlName="email"
+                  pInputText
+                  [invalid]="zodErrors()['email']"
+                  placeholder="jean@example.org"
+                  class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+                />
+                <small class="text-red-400 font-bold"
+                  >{{ zodErrors()['email'] }}</small
+                >
+              </p-inputgroup>
+            </div>
+            <div class="flex flex-col md:flex-row gap-6">
+              <p-inputgroup class="flex flex-col gap-2">
+                <label class="font-bold text-gray-600">Tel / WhatsApp</label>
+                <input
+                  type="tel"
+                  formControlName="phone"
+                  pInputText
+                  [invalid]="zodErrors()['phone']"
+                  pInputMask="999 99 999 99"
+                  placeholder="038 09 209 41"
+                  class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+                />
+                <small class="text-red-400 font-bold"
+                  >{{ zodErrors()['phone'] }}</small
+                >
+              </p-inputgroup>
+              <p-inputgroup class="flex flex-col gap-2">
+                <label class="font-bold text-gray-600">Site web</label>
+                <input
+                  type="text"
+                  formControlName="website"
+                  pInputText
+                  [invalid]="zodErrors()['website']"
+                  placeholder="https://aaajm.org"
+                  class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+                />
+                <small class="text-red-400 font-bold"
+                  >{{ zodErrors()['website'] }}</small
+                >
+              </p-inputgroup>
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="font-bold text-gray-600">Motifs / Attentes</label>
+              <textarea
+                formControlName="reason"
+                pInputTextarea
+                rows="4"
+                placeholder="Pourquoi voulez vous collaborer avec nous?"
+                class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+              ></textarea>
+              <small class="text-red-400 font-bold"
+                >{{ zodErrors()['reason'] }}</small
+              >
+            </div>
+
+            <p-button
+              type="submit"
+              [loading]="submitPartnerState.isLoading()"
+              [raised]="true"
+              label="Soumettre ma demande"
+              styleClass="w-full text-white font-bold py-4 rounded-lg bg-[#D03830]"
+            />
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
