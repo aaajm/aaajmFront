@@ -15,29 +15,26 @@ export function authInterceptor(
   const authProvider = inject(AuthProvider);
   const fingerprintService = inject(FingerprintService);
 
-  if (authProvider.getToken()) {
-    return from(fingerprintService.getFingerprint()).pipe(
-      switchMap((fingerprint) => {
-        const newReq = request.clone({
-          headers: request.headers
-            .set(
-              'Authorization',
-              `Bearer ${authProvider.getToken()!.accessToken}`
-            )
-            .append('X-User-Fingerprint', fingerprint),
-        });
+  return from(fingerprintService.getFingerprint()).pipe(
+    switchMap((fingerprint) => {
+      const newReq = request.clone({
+        headers: request.headers
+          .set(
+            'Authorization',
+            `Bearer ${authProvider.getToken()?.accessToken || ''}`
+          )
+          .append('X-User-Fingerprint', fingerprint),
+      });
 
-        return next(newReq).pipe(
-          catchError((error: HttpErrorResponse) => {
-            if (error.status === 401) {
-              authProvider.logout();
-            }
+      return next(newReq).pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === 401) {
+            authProvider.logout();
+          }
 
-            return throwError(() => error);
-          })
-        );
-      })
-    );
-  }
-  return next(request);
+          return throwError(() => error);
+        })
+      );
+    })
+  );
 }
