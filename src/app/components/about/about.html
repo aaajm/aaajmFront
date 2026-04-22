@@ -1,0 +1,64 @@
+<section class="flex items-center my-10 p-10">
+  <div
+    class="container mx-auto flex {{screen.isMobile() ? 'flex-col' : 'flex-row'}} gap-10 items-center"
+  >
+    <div>
+      <span
+        class="inline-block p-2 text-xl bg-[#FDF2F2] text-[#B45309] font-bold tracking-widest uppercase rounded mb-6"
+      >
+        滞日经駿者同忘会
+      </span>
+      <h1 class="text-5xl lg:text-7xl font-serif text-[#D03830] mb-8">
+        Association des Anciens et Amis du Japon à Madagascar
+      </h1>
+      <p class="text-[#4B5563] text-lg max-w-xl mb-10 leading-relaxed">
+        Oeuvrons ensemble pour le développement socio-culturel et économique de
+        Madagascar et le renforcement de lien d'amitié et de relation avec le
+        peuple, les organisations et partenaires japonais.
+      </p>
+
+      <div class="flex items-center gap-8">
+        <a
+          pButton
+          href="/home#mission-history"
+          label="Nos missions"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          class="p-button-rounded bg-[#D03830] text-white border-none px-8 py-4"
+        >
+        </a>
+
+        <a
+          href="/content"
+          class="text-[#1F2937] font-semibold border-b border-[#1F2937] pb-1 hover:text-[#064E3B] transition-colors"
+        >
+          Voir les actualités
+        </a>
+      </div>
+    </div>
+
+    <div class="relative w-full max-w-xl min-w-64 isolate aspect-[8/5]">
+      <p-image
+        src="members.jpg"
+        imageClass="rounded-xl shadow-2xl object-cover"
+        alt="Image"
+        appendTo="body"
+        [preview]="true"
+      />
+
+      <p-card
+        class="absolute -bottom-8 md:-left-12 w-64 shadow-2xl border-none"
+      >
+        <div class="flex gap-1 mb-2">
+          @for (item of [1,2,3,4,5]; track $index) {
+          <i class="pi pi-star-fill text-[#B45309] text-[10px]"></i>
+          }
+        </div>
+        <p class="text-sm text-[#4B5563]">
+          <span class="font-bold">"Maintimolalin'i Japana"</span> <br />
+          Association à but non lucratif
+        </p>
+      </p-card>
+    </div>
+  </div>
+</section>
