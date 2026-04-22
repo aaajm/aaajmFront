@@ -1,6 +1,12 @@
+import '@/app/config/zod';
 import {authInterceptor} from '@/app/providers';
+import {provideApi} from '@aaajm/client';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {ApplicationConfig} from '@angular/core';
+import {
+  provideClientHydration,
+  withEventReplay,
+} from '@angular/platform-browser';
 import {provideRouter} from '@angular/router';
 import Aura from '@primeuix/themes/aura';
 import {MessageService} from 'primeng/api';
@@ -11,6 +17,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
+    provideApi({basePath: import.meta.env.NG_APP_API_URL}),
     providePrimeNG({
       theme: {
         preset: Aura,
@@ -23,6 +30,7 @@ export const appConfig: ApplicationConfig = {
         },
       },
     }),
+    provideClientHydration(withEventReplay()),
     MessageService,
   ],
 };
