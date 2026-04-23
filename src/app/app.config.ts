@@ -19,7 +19,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([authInterceptor])),
     provideApi({
       basePath: import.meta.env.NG_APP_API_URL,
-      withCredentials: true,
       credentials: {BearerAuth: () => AuthStorage.accessToken()},
     }),
     providePrimeNG({
