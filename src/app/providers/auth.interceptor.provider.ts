@@ -18,12 +18,7 @@ export function authInterceptor(
   return from(fingerprintService.getFingerprint()).pipe(
     switchMap((fingerprint) => {
       const newReq = request.clone({
-        headers: request.headers
-          .set(
-            'Authorization',
-            `Bearer ${authProvider.getToken()?.accessToken || ''}`
-          )
-          .append('X-User-Fingerprint', fingerprint),
+        headers: request.headers.append('X-User-Fingerprint', fingerprint),
       });
 
       return next(newReq).pipe(
