@@ -1,0 +1,103 @@
+<div
+  class="flex {{screen.isMobile() ? '' : 'items-center'}} justify-center h-full mb-20"
+>
+  <div class="w-full max-w-xl">
+    <div
+      class="bg-white p-10 rounded-2xl flex flex-col h-full justify-center items-center shadow-xl border-2 border-slate-50"
+    >
+      <div
+        class="w-24 h-24 flex justify-center font-bold text-2xl rounded-full bg-[#D03830] text-white border-none mb-10 items-center mx-auto"
+      >
+        AAAJM
+      </div>
+      <h3 class="text-3xl font-bold text-teal-950 mb-8">Connexion</h3>
+
+      <form
+        (submit)="submit()"
+        [formGroup]="form"
+        class="flex flex-col gap-6 w-full"
+      >
+        <p-inputgroup class="flex flex-col gap-2">
+          <label class="font-bold text-gray-600">Email</label>
+          <input
+            type="email"
+            formControlName="email"
+            pInputText
+            [invalid]="zodErrors()['email']"
+            placeholder="jean@example.org"
+            class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+          />
+          <small class="text-red-400 font-bold"
+            >{{ zodErrors()['email'] }}</small
+          >
+        </p-inputgroup>
+        <div class="flex flex-col gap-2">
+          <label for="password_input">Mot de passe</label>
+          <p-password
+            feedback="false"
+            fluid="true"
+            [invalid]="zodErrors()['password']"
+            toggleMask="true"
+            inputId="password_input"
+            formControlName="password"
+            placeholder="*****"
+            aria-describedby="password-helper"
+            inputStyleClass="p-2 bg-slate-100 border-none rounded-lg outline-none"
+          />
+          <small id="password-helper" class="text-red-400"
+            >{{ zodErrors()['password'] }}</small
+          >
+        </div>
+
+        <p-button
+          label="Mot de passe oublié ?"
+          link
+          (onClick)="op.toggle($event)"
+          size="small"
+        ></p-button>
+        <p-button
+          type="submit"
+          [loading]="loginState.isLoading()"
+          [raised]="true"
+          label="Connexion"
+          styleClass="w-full text-white font-bold py-2 rounded-lg bg-[#D03830]"
+        />
+        <p-popover #op>
+          <div class="w-full">
+            <span
+              class="font-medium text-surface-900 dark:text-surface-0 block mb-2"
+              >Votre email</span
+            >
+            <div class="flex gap-2">
+              <p-inputgroup>
+                <input
+                  pInputText
+                  type="email"
+                  formControlName="email"
+                  size="small"
+                  placeholder="exemple@gmail.com"
+                  aria-describedby="email-forgot-helper"
+                  class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+                />
+
+                <small id="email-forgot-helper" class="text-red-400"
+                  >{{ zodErrors()['email'] }}</small
+                >
+              </p-inputgroup>
+              <p-button
+                (click)="forgotPassword()"
+                [loading]="loginState.isLoading()"
+                [raised]="true"
+                icon="pi pi-send"
+                label="Envoyer"
+                [loading]="sendEmailState.isLoading()"
+                size="small"
+                styleClass="p-2 w-full text-white font-bold rounded-lg bg-[#D03830]"
+              />
+            </div>
+          </div>
+        </p-popover>
+      </form>
+    </div>
+  </div>
+</div>
