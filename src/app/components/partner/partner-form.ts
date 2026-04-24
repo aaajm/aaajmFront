@@ -25,7 +25,7 @@ import {InputTextModule} from 'primeng/inputtext';
 export class PartnerForm {
   private formBuilder = inject(FormBuilder);
   private partnerService = inject(PartnerService);
-  partnerForm = this.formBuilder.group<Partner>(DEFAULT_PARTNER);
+  partnerForm = this.formBuilder.group<Partner>(DEFAULT_PARTNER as Partner);
   //TODO: add adress and logo
   submitPartnerState = inject(HttpStateService);
   zodErrors = signal<Record<string, string | null>>({});

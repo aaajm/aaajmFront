@@ -7,8 +7,7 @@
     "types": []
   },
   "include": [
-    "src/**/*.ts",
-    "node_modules/@aaajm/client/**/*.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "src/**/*.spec.ts"
