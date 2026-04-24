@@ -1,10 +1,9 @@
 import {AuthProvider} from '@/app/providers';
 import {HttpStateService} from '@/app/services';
-import {DEFAULT_LOGIN, runZodValidation, ToastService} from '@/app/utils';
+import {DEFAULT_LOGIN, runZodValidation} from '@/app/utils';
 import {Screen} from '@/app/utils/screen';
 import {SecurityService, Signin} from '@aaajm/client';
 import {signinSchema} from '@aaajm/client/zod';
-import {HttpClient} from '@angular/common/http';
 import {Component, inject, signal} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
@@ -35,17 +34,12 @@ import {StepperModule} from 'primeng/stepper';
   templateUrl: './login.html',
 })
 export class Login {
-  private toast = inject(ToastService);
-  private httpClient = inject(HttpClient);
   private securityService = inject(SecurityService);
   private formBuilder = inject(FormBuilder);
   private router = inject(Router);
   private authProvider = inject(AuthProvider);
   loginState = inject(HttpStateService);
-  whoamiState = inject(HttpStateService);
-  sendEmailState = inject(HttpStateService);
-  email = signal('');
-  files = signal<File[]>([]);
+  resetState = inject(HttpStateService);
 
   screen = inject(Screen);
   form = this.formBuilder.group<Signin>(DEFAULT_LOGIN);
@@ -66,7 +60,6 @@ export class Login {
     await this.loginState.request({
       request: this.securityService.signin(parsedValue.data),
       onSuccess: (token: string) => {
-        //TODO: handle verify email
         this.authProvider.setToken({accessToken: token, refresshToken: ''});
         this.navigate('/authentication/verify-email');
       },
@@ -77,5 +70,13 @@ export class Login {
     this.router.navigate([route]);
   }
 
-  async forgotPassword() {}
+  async forgotPassword() {
+    await this.resetState.request({
+      request: this.securityService.resetPassword(this.form.value.email!),
+      onSuccess: (token: string) => {
+        this.authProvider.setToken({accessToken: token, refresshToken: ''});
+        this.navigate('/change-password');
+      },
+    });
+  }
 }
