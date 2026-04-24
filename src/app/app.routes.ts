@@ -3,8 +3,10 @@ import {HomePage} from '@/app/pages/home';
 import {Login} from '@/app/pages/login';
 import {NotFound} from '@/app/pages/not-found';
 import {PartnerPage} from '@/app/pages/partner';
+import {TopicPage} from '@/app/pages/topic';
 import {VerifyEmail} from '@/app/pages/verify-email';
 import {Routes} from '@angular/router';
+import {TopicForm} from './components/topic';
 import {ChangePassword} from './pages/change-password';
 
 export const routes: Routes = [
@@ -18,6 +20,8 @@ export const routes: Routes = [
       {path: 'authentication/verify-email', component: VerifyEmail},
       {path: 'change-password', component: ChangePassword},
       {path: 'partner', component: PartnerPage},
+      {path: 'topic/:topicId', component: TopicPage},
+      {path: 'topic-form', component: TopicForm},
       {path: '**', component: NotFound},
     ],
   },

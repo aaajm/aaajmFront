@@ -1,0 +1,81 @@
+<div class="min-h-screen bg-aaajm-cream font-serif text-slate-900 pb-20">
+  @if (topic!=null) {
+  <main class="container mx-auto px-6 max-w-6xl pt-16">
+    <div class="flex flex-col lg:flex-row gap-16">
+      <div>
+        <header class="mb-2">
+          <p class="text-gray-700 font-bold uppercase">
+            {{formatDate(topic.creationDatetime!)}}
+          </p>
+          <h1
+            class="text-4xl md:text-6xl font-bold text-aaajm-dark mt-4 leading-tight"
+          >
+            {{topic.title}}
+          </h1>
+
+          <div
+            class="flex items-center justify-between mt-8 py-6 border-y border-gray-100"
+          >
+            <div class="flex items-center gap-3">
+              <p-avatar
+                image="https://i.pravatar.cc/150?u=elias"
+                shape="circle"
+                size="large"
+              ></p-avatar>
+              <div class="flex flex-col">
+                <span class="text-xl font-bold"
+                  >{{topic.createdBy.firstname || ""}}
+                  {{topic.createdBy.lastname || ""}}</span
+                >
+                <span class="text-gray-500 font-sans">Modérateur</span>
+              </div>
+            </div>
+          </div>
+        </header>
+        @if(!editorLoaded()){
+        <div class="w-full">
+          <p-skeleton width="100%" class="mb-2" />
+          <p-skeleton width="75%" class="mb-2" />
+          <p-skeleton width="100%" class="mb-2" />
+          <p-skeleton width="80%" class="mb-2" />
+        </div>
+        }
+        <p-editor
+          [readonly]="true"
+          [(ngModel)]="topic.description"
+          (onInit)="handleInit()"
+        >
+          <ng-template #header></ng-template>
+        </p-editor>
+      </div>
+    </div>
+
+    @if (topic.images && topic.images.length > 0) {
+    <section class="mt-2">
+      <div class="flex items-end justify-between">
+        <h2 class="text-3xl font-bold">Archives visuelles</h2>
+      </div>
+
+      <section class="py-5">
+        <div class="flex flex-wrap gap-4">
+          @for (img of topic.images; track img.file_url) {
+          <div
+            class="relative flex-grow md:h-[400px] max-h-[200px] md:max-h-[300px] overflow-hidden rounded-2xl shadow-md group"
+          >
+            <p-image
+              class="w-full h-full object-cover"
+              imageClass="w-full h-full object-cover rounded-xl group-hover:scale-110 transition-transform duration-700 object-cover"
+              [src]="img.file_url"
+              alt=" "
+              [preview]="true"
+            />
+          </div>
+          }
+          <div class="flex-grow-[10] invisible"></div>
+        </div>
+      </section>
+    </section>
+    }
+  </main>
+  }
+</div>

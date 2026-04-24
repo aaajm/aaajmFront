@@ -17,10 +17,8 @@
     <ng-template
       #content
       let-files
-      let-uploadedFiles="uploadedFiles"
       let-chooseCallback="chooseCallback"
       let-removeFileCallback="removeFileCallback"
-      let-removeUploadedFileCallback="removeUploadedFileCallback"
     >
       <div class="flex items-center justify-center flex-col">
         <p-button
@@ -52,7 +50,7 @@
               >
               <p-button
                 icon="pi pi-times"
-                (onClick)="removeFileCallback($index)"
+                (onClick)="onRemoveTemplatingFile($event, files, removeFileCallback, $index)"
                 [outlined]="true"
                 [rounded]="true"
                 severity="danger"

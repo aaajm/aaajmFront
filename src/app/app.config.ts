@@ -7,7 +7,7 @@ import {
   provideClientHydration,
   withEventReplay,
 } from '@angular/platform-browser';
-import {provideRouter} from '@angular/router';
+import {provideRouter, withComponentInputBinding} from '@angular/router';
 import Aura from '@primeuix/themes/aura';
 import {MessageService} from 'primeng/api';
 import {providePrimeNG} from 'primeng/config';
@@ -15,7 +15,7 @@ import {routes} from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideApi({
       basePath: import.meta.env.NG_APP_API_URL,
