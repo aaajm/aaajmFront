@@ -57,7 +57,7 @@ export class PartnerForm {
     await this.submitPartnerState.request({
       request: this.partnerService.addPartner(
         parsedValue.data! as Partner,
-        this.logoFile()
+        this.logoFile() ? this.logoFile()! : undefined
       ),
       onSuccess: () => {
         this.toast.message('success', 'Votre requête est envoyé.');
