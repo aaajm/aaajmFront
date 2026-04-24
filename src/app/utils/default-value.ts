@@ -9,6 +9,7 @@ export const DEFAULT_PARTNER = () =>
     reason: '',
     website: '',
     status: Partner.StatusEnum.Waiting,
-  });
+    address: '',
+  }) as Partner;
 
 export const DEFAULT_LOGIN = {email: '', password: ''};

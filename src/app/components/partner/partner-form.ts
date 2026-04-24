@@ -1,5 +1,10 @@
 import {HttpStateService} from '@/app/services';
-import {DEFAULT_PARTNER, runZodValidation} from '@/app/utils';
+import {
+  DEFAULT_PARTNER,
+  newId,
+  runZodValidation,
+  ToastService,
+} from '@/app/utils';
 import {Partner, PartnerService} from '@aaajm/client';
 import {partnerSchema} from '@aaajm/client/zod';
 import {Component, inject, signal} from '@angular/core';
@@ -8,6 +13,7 @@ import {Button} from 'primeng/button';
 import {InputGroupModule} from 'primeng/inputgroup';
 import {InputMaskModule} from 'primeng/inputmask';
 import {InputTextModule} from 'primeng/inputtext';
+import {Fileupload} from '../file-upload';
 
 @Component({
   selector: 'partner-form',
@@ -19,16 +25,23 @@ import {InputTextModule} from 'primeng/inputtext';
     InputTextModule,
     InputGroupModule,
     Button,
+    Fileupload,
   ],
   templateUrl: './partner-form.html',
 })
 export class PartnerForm {
   private formBuilder = inject(FormBuilder);
   private partnerService = inject(PartnerService);
+  toast = inject(ToastService);
   partnerForm = this.formBuilder.group<Partner>(DEFAULT_PARTNER());
-  //TODO: add adress and logo
   submitPartnerState = inject(HttpStateService);
   zodErrors = signal<Record<string, string | null>>({});
+  logoFile = signal<File | null>(null);
+
+  onSelectLogo(files: File[]) {
+    if (files && files.length > 0)
+      this.logoFile.set(new File([files[0]], newId()));
+  }
 
   async submit() {
     this.partnerForm.markAllAsTouched();
@@ -42,9 +55,15 @@ export class PartnerForm {
     if (!parsedValue.success) return;
 
     await this.submitPartnerState.request({
-      request: this.partnerService.addPartner(parsedValue.data!),
-      onSuccess: () => console.log('Partner added logic'),
+      request: this.partnerService.addPartner(
+        parsedValue.data! as Partner,
+        this.logoFile()
+      ),
+      onSuccess: () => {
+        this.toast.message('success', 'Votre requête est envoyé.');
+        this.toast.message('success', 'On reviendra vers vous.');
+        this.partnerForm.reset(DEFAULT_PARTNER());
+      },
     });
-    this.partnerForm.reset(DEFAULT_PARTNER());
   }
 }
