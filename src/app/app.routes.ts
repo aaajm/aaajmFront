@@ -8,6 +8,7 @@ import {VerifyEmail} from '@/app/pages/verify-email';
 import {Routes} from '@angular/router';
 import {TopicForm} from './components/topic';
 import {ChangePassword} from './pages/change-password';
+import {MemberPage} from './pages/member';
 
 export const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -22,6 +23,7 @@ export const routes: Routes = [
       {path: 'partner', component: PartnerPage},
       {path: 'topic/:topicId', component: TopicPage},
       {path: 'topic-form', component: TopicForm},
+      {path: 'member', component: MemberPage},
       {path: '**', component: NotFound},
     ],
   },
