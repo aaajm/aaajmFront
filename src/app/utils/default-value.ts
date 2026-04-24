@@ -1,4 +1,4 @@
-import {Partner} from '@aaajm/client';
+import {CreateTopic, Partner} from '@aaajm/client';
 import {safeAddUuid} from './uuid';
 
 export const DEFAULT_PARTNER = () =>
@@ -13,3 +13,10 @@ export const DEFAULT_PARTNER = () =>
   }) as Partner;
 
 export const DEFAULT_LOGIN = {email: '', password: ''};
+
+export const DEFAULT_TOPIC = () =>
+  safeAddUuid({
+    title: '',
+    description: '',
+    authorId: '',
+  }) as CreateTopic;
