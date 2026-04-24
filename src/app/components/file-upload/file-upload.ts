@@ -25,4 +25,14 @@ export class Fileupload {
   onSelectedFiles(event: FileSelectEvent) {
     this.onSelect.emit(event.currentFiles);
   }
+
+  onRemoveTemplatingFile(
+    event: MouseEvent,
+    files: File[],
+    removeFileCallback: (event: MouseEvent, index: number) => void,
+    index: number
+  ) {
+    removeFileCallback(event, index);
+    this.onSelect.emit(files);
+  }
 }
