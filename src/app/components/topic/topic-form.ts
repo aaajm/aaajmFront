@@ -50,13 +50,14 @@ export class TopicForm {
     );
 
     if (!parsedValue.success) return;
-    console.log(parsedValue.data, this.files());
 
-    // await this.topicState.request({
-    //   request: this.topicService.crupdateTopic(false,{...parsedValue.data, authorId: this.authProvider.currentUser()!.id}, this.files()!),
-    //   onSuccess:()=> {
-
-    //   }
-    // })
+    await this.topicState.request({
+      request: this.topicService.crupdateTopic(
+        false,
+        {...parsedValue.data, authorId: this.authProvider.currentUser()!.id},
+        this.files()!
+      ),
+      onSuccess: () => {},
+    });
   }
 }

@@ -14,16 +14,16 @@ export class TopicPage {
   topicState = inject(HttpStateService);
   topicId = input.required<string>();
 
-  userResource = resource({
+  topicResource = resource({
     params: () => ({id: this.topicId()}),
     loader: ({params}): Promise<TopicData> => {
       return firstValueFrom(this.topicService.getOneTopic(params.id));
     },
   });
 
-  backTopic = computed(() => {
-    if (this.userResource.hasValue()) {
-      return this.userResource.value();
+  topic = computed(() => {
+    if (this.topicResource.hasValue()) {
+      return this.topicResource.value();
     }
 
     return null;
