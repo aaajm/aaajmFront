@@ -8,4 +8,14 @@ body {
   margin: 0;
   background-color: white;
   box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+.ql-editor h1 {
+  @apply text-2xl md:text-4xl font-bold block !important;
+}
+.ql-editor h2 {
+  @apply text-xl md:text-2xl font-bold block !important;
+}
+.ql-editor {
+  @apply md:text-2xl text-xl;
 }

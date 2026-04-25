@@ -10,7 +10,6 @@ import {TopicForm} from './components/topic';
 import {ChangePassword} from './pages/change-password';
 import {MemberPage} from './pages/member';
 
-
 export const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
   {
@@ -22,11 +21,14 @@ export const routes: Routes = [
       {path: 'authentication/verify-email', component: VerifyEmail},
       {path: 'change-password', component: ChangePassword},
       {path: 'partner', component: PartnerPage},
-      {path: 'photos', loadComponent: () => import('./pages/photos').then(m => m.PhotosPage)},
+      {
+        path: 'album',
+        loadComponent: () => import('./pages/photos').then((m) => m.PhotosPage),
+      },
       {path: 'topic/:topicId', component: TopicPage},
       {path: 'topic-form', component: TopicForm},
       {path: 'member', component: MemberPage},
-      {path: '**', component: NotFound}
+      {path: '**', component: NotFound},
     ],
   },
 ];

@@ -34,7 +34,6 @@ export class PartnerForm {
   private partnerService = inject(PartnerService);
   toast = inject(ToastService);
   partnerForm = this.formBuilder.group<Partner>(DEFAULT_PARTNER());
-
   submitPartnerState = inject(HttpStateService);
   zodErrors = signal<Record<string, string | null>>({});
   logoFile = signal<File | null>(null);
