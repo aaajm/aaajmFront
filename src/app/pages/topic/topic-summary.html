@@ -1,0 +1,5 @@
+<div class="flex flex-wrap gap-6 p-10">
+  @for (item of topics(); track $index) {
+  <topic-summary [summary]="item"></topic-summary>
+  }
+</div>

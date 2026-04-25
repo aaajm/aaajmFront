@@ -1,0 +1,41 @@
+<p-card
+  class="w-full max-w-52 md:max-w-xs h-full flex flex-col overflow-hidden border border-gray-100 rounded-xl shadow-none"
+>
+  <ng-template pTemplate="header">
+    <div class="relative w-full aspect-[8/5] overflow-hidden">
+      <p-image
+        [src]="summary.imageCoverage"
+        imageClass="object-cover w-full h-full rounded-t-xl"
+        [alt]="summary.title"
+      />
+      <div class="absolute bottom-4 right-4">
+        <p-tag value="#Tag" />
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="flex flex-col h-full gap-4 py-2">
+    <h2
+      class="text-xl font-bold leading-tight hover:underline cursor-pointer min-h-[3rem]"
+      (click)="navigate('/content/' + summary.id)"
+    >
+      {{ summary.title }}
+    </h2>
+
+    <div class="flex items-center gap-4 mt-auto pt-2">
+      <p-avatar
+        image="https://i.pravatar.cc/100?u=tech"
+        shape="circle"
+        size="large"
+      >
+      </p-avatar>
+
+      <div class="flex flex-col justify-center overflow-hidden">
+        <div class="font-bold truncate">{{ summary.createdBy.firstname }}</div>
+        <div class="flex items-center gap-2 text-gray-400 text-xs font-mono">
+          <span>{{ formatDate(summary.creationDatetime!) ||'' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</p-card>
