@@ -3,7 +3,7 @@ import {HomePage} from '@/app/pages/home';
 import {Login} from '@/app/pages/login';
 import {NotFound} from '@/app/pages/not-found';
 import {PartnerPage} from '@/app/pages/partner';
-import {TopicPage} from '@/app/pages/topic';
+import {TopicPage, TopicSummaryPage} from '@/app/pages/topic';
 import {VerifyEmail} from '@/app/pages/verify-email';
 import {Routes} from '@angular/router';
 import {TopicForm} from './components/topic';
@@ -25,8 +25,9 @@ export const routes: Routes = [
         path: 'album',
         loadComponent: () => import('./pages/photos').then((m) => m.PhotosPage),
       },
-      {path: 'topic/:topicId', component: TopicPage},
+      {path: 'content/:topicId', component: TopicPage},
       {path: 'topic-form', component: TopicForm},
+      {path: 'content', component: TopicSummaryPage},
       {path: 'member', component: MemberPage},
       {path: '**', component: NotFound},
     ],
