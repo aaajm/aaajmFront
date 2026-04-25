@@ -48,7 +48,9 @@ export class HttpStateService<T> {
     }
   }
   private handleError(error: HttpErrorResponse) {
-    this.toast.message('error', 'Error', error.message);
-    this.error.set(error.message);
+    const errorMessage = error.error?.message || "une erreur s'est produite?";
+
+    this.toast.message('error', 'Error', errorMessage);
+    this.error.set(errorMessage);
   }
 }

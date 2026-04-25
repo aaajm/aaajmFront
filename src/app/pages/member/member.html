@@ -1,0 +1,32 @@
+<section class="p-10 h-full w-full">
+  <div
+    class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6"
+  >
+    <div class="flex flex-col gap-2">
+      <h2 class="text-4xl font-bold text-[#D03830] tracking-tight">
+        Membres de l'AAAJM
+      </h2>
+      <p class="text-md text-gray-500">Envie de nous connaitre un peut plus.</p>
+    </div>
+
+    <div class="flex items-center gap-3 font-sans">
+      <div class="relative">
+        <i
+          class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+        ></i>
+        <input
+          type="text"
+          pInputText
+          placeholder="Recherche par nom..."
+          class="pl-10 py-2 text-sm bg-slate-200 border-none w-64 rounded"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-6">
+    @for (member of users(); track $index) {
+    <app-member [member]="member"></app-member>
+    }
+  </div>
+</section>

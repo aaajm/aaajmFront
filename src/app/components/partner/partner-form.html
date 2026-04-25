@@ -26,6 +26,10 @@
             [formGroup]="partnerForm"
             class="flex flex-col gap-6"
           >
+            <file-uploader
+              label="Votre logo"
+              (onSelect)="onSelectLogo($event)"
+            ></file-uploader>
             <div class="flex flex-col md:flex-row gap-6">
               <p-inputgroup class="flex flex-col gap-2">
                 <label class="font-bold text-gray-600"
@@ -44,7 +48,7 @@
                 >
               </p-inputgroup>
               <p-inputgroup class="flex flex-col gap-2">
-                <label class="font-bold text-gray-600">Email Address</label>
+                <label class="font-bold text-gray-600">Email</label>
                 <input
                   type="email"
                   formControlName="email"
@@ -86,6 +90,22 @@
                 />
                 <small class="text-red-400 font-bold"
                   >{{ zodErrors()['website'] }}</small
+                >
+              </p-inputgroup>
+            </div>
+            <div class="flex flex-col md:flex-row gap-6">
+              <p-inputgroup class="flex flex-col gap-2">
+                <label class="font-bold text-gray-600">Adresse</label>
+                <input
+                  type="text"
+                  formControlName="address"
+                  pInputText
+                  [invalid]="zodErrors()['address']"
+                  placeholder="67 ha nord"
+                  class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+                />
+                <small class="text-red-400 font-bold"
+                  >{{ zodErrors()['address'] }}</small
                 >
               </p-inputgroup>
             </div>
