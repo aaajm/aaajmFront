@@ -49,3 +49,8 @@ export class AuthProvider {
     this.router.navigate(['/login']);
   }
 }
+
+export const AuthStorage = {
+  accessToken: () =>
+    JSON.parse(localStorage.getItem('jwt_token') || 'null')?.accessToken || '',
+};
