@@ -44,7 +44,7 @@ export class Navbar {
       authorized: true,
     },
     {
-      url: '/album',
+      url: '/photos',
       label: 'Galerie',
       authorized: true,
     },
