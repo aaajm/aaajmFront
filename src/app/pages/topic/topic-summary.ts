@@ -1,12 +1,14 @@
+import {Skeleton} from '@/app/components/skeleton';
 import {TopicSummary} from '@/app/components/topic';
 import {TopicSummary as SummaryData, TopicService} from '@aaajm/client';
 import {Component, computed, inject, resource} from '@angular/core';
+import {SkeletonModule} from 'primeng/skeleton';
 import {firstValueFrom} from 'rxjs';
 
 @Component({
   selector: 'topic-summary-page',
   standalone: true,
-  imports: [TopicSummary],
+  imports: [TopicSummary, SkeletonModule, Skeleton],
   templateUrl: './topic-summary.html',
 })
 export class TopicSummaryPage {
@@ -20,8 +22,6 @@ export class TopicSummaryPage {
 
   topics = computed(() => {
     if (this.topicResource.hasValue()) {
-      console.log(this.topicResource.value());
-
       return this.topicResource.value();
     }
 

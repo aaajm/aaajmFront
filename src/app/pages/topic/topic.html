@@ -1,1 +1,6 @@
+@if (topicResource.isLoading()) {
+<app-skeleton />
+} @if (!topicResource.isLoading() &&topic() == null) {
+<span class="text-center mx-auto">Aucun contenu</span>
+}
 <topic [topic]="topic()"></topic>

@@ -6,6 +6,7 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 import {inject} from '@angular/core';
+import {MessageService} from 'primeng/api';
 import {catchError, from, switchMap, throwError} from 'rxjs';
 
 export function authInterceptor(
@@ -14,6 +15,7 @@ export function authInterceptor(
 ) {
   const authProvider = inject(AuthProvider);
   const fingerprintService = inject(FingerprintService);
+  const toast = inject(MessageService);
 
   return from(fingerprintService.getFingerprint()).pipe(
     switchMap((fingerprint) => {
@@ -26,6 +28,11 @@ export function authInterceptor(
           if (error.status === 401) {
             authProvider.logout();
           }
+          toast.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: "Une erreur s'est produite, veuillez réessayer",
+          });
 
           return throwError(() => error);
         })

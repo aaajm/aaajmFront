@@ -23,9 +23,13 @@
       </div>
     </div>
   </div>
-
+  @if (userResource.isLoading()) {
+  <app-skeleton />
+  }
   <div class="flex flex-wrap gap-6">
-    @for (member of users(); track $index) {
+    @if (!userResource.isLoading() && users().length < 1) {
+    <span class="text-center mx-auto">Aucun contenu</span>
+    } @for (member of users(); track $index) {
     <app-member [member]="member"></app-member>
     }
   </div>

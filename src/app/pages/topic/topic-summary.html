@@ -1,5 +1,10 @@
+@if (topicResource.isLoading()) {
+<app-skeleton />
+}
 <div class="flex flex-wrap gap-6 p-10">
-  @for (item of topics(); track $index) {
+  @if (!topicResource.isLoading() &&topics().length < 1) {
+  <span class="text-center mx-auto">Aucun contenu</span>
+  } @for (item of topics(); track $index) {
   <topic-summary [summary]="item"></topic-summary>
   }
 </div>

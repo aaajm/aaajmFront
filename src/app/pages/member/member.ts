@@ -1,4 +1,5 @@
 import {Member} from '@/app/components/member/member';
+import {Skeleton} from '@/app/components/skeleton';
 import {User, UserService} from '@aaajm/client';
 import {Component, computed, inject, resource} from '@angular/core';
 import {firstValueFrom} from 'rxjs';
@@ -7,15 +8,14 @@ import {firstValueFrom} from 'rxjs';
   selector: 'member-page',
   standalone: true,
   templateUrl: './member.html',
-  imports: [Member],
+  imports: [Member, Skeleton],
 })
 export class MemberPage {
-  //TODO: user profile from backend
   //TODO: handle loading and error states + skeleton
   userService = inject(UserService);
 
   userResource = resource({
-    loader: ({params}): Promise<User[]> => {
+    loader: (): Promise<User[]> => {
       return firstValueFrom(this.userService.getUsers());
     },
   });

@@ -1,3 +1,4 @@
+import {Skeleton} from '@/app/components/skeleton';
 import {Topic} from '@/app/components/topic';
 import {HttpStateService} from '@/app/services';
 import {Topic as TopicData, TopicService} from '@aaajm/client';
@@ -6,7 +7,7 @@ import {firstValueFrom} from 'rxjs';
 
 @Component({
   selector: 'topic-page',
-  imports: [Topic],
+  imports: [Topic, Skeleton],
   templateUrl: './topic.html',
 })
 export class TopicPage {
