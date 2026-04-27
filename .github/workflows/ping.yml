@@ -1,0 +1,14 @@
+name: Ping backend instance
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: '*/15 * * * *'
+
+jobs:
+  deploy-app:
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: curl ${{secrets.API_URL}}/ping
