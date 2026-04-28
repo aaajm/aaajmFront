@@ -15,10 +15,18 @@
     "target": "ES2022",
     "module": "preserve",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/app/*": ["./src/app/*"],
-      "@aaajm/client": ["./src/app/client/index.ts"],
-      "@aaajm/client/*": ["./src/app/client/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@/app/*": [
+        "./src/app/*"
+      ],
+      "@aaajm/client": [
+        "./src/app/client/index.ts"
+      ],
+      "@aaajm/client/*": [
+        "./src/app/client/*"
+      ]
     }
   },
   "angularCompilerOptions": {

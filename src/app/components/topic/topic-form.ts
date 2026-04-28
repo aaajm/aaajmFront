@@ -54,9 +54,13 @@ export class TopicForm {
     await this.topicState.request({
       request: this.topicService.crupdateTopic(
         false,
-        {...parsedValue.data, authorId: this.authProvider.currentUser()!.id},
+        {
+          ...parsedValue.data,
+          authorId: this.authProvider.currentUser()?.id || '',
+        },
         this.files()!
       ),
+
       onSuccess: () => {},
     });
   }
