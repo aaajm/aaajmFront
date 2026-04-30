@@ -1,11 +1,14 @@
 import {Footer} from '@/app/components/footer';
-import {Navbar} from '@/app/components/navbar';
-import {Component} from '@angular/core';
+import {AuthProvider} from '@/app/providers';
+import {Component, inject} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
+import {Sidebar} from './sidebar';
 
 @Component({
   selector: 'app-layout',
-  imports: [Navbar, RouterOutlet, Footer],
+  imports: [RouterOutlet, Footer, Sidebar],
   templateUrl: './layout.html',
 })
-export class Layout {}
+export class Layout {
+  authProvdier = inject(AuthProvider);
+}

@@ -1,38 +1,34 @@
-import {Screen} from '@/app/utils';
-import {Component, computed, inject, signal} from '@angular/core';
+import {AuthProvider} from '@/app/providers';
+import {Screen} from '@/app/utils/screen';
+import {Component, computed, inject} from '@angular/core';
 import {Router} from '@angular/router';
 import {AvatarModule} from 'primeng/avatar';
 import {ButtonModule} from 'primeng/button';
 import {DrawerModule} from 'primeng/drawer';
-import {ToolbarModule} from 'primeng/toolbar';
+type Route = {
+  url: string;
+  label: string;
+  authorized: boolean;
+};
 
 @Component({
-  selector: 'app-navbar',
-  imports: [
-    ToolbarModule,
-    AvatarModule,
-    ButtonModule,
-    DrawerModule,
-    AvatarModule,
-  ],
-  templateUrl: './navbar.html',
+  selector: 'sidebar-content',
+  imports: [AvatarModule, DrawerModule, ButtonModule],
+  templateUrl: './sidebar-content.html',
 })
-export class Navbar {
+export class SidebarContent {
+  private router = inject(Router);
   screen = inject(Screen);
-  router = inject(Router);
+  authProvider = inject(AuthProvider);
+  readonly loggedUser = computed(() => this.authProvider.currentUser());
   readonly currentUrl = computed(() => this.router.url);
-  visibleDrawer = signal(false);
-  toggleDrawer() {
-    this.visibleDrawer.update((v) => !v);
-  }
-  openDrawer() {
-    this.visibleDrawer.set(true);
-  }
-  closeDrawer() {
-    this.visibleDrawer.set(false);
-  }
 
-  possibleRoutes = [
+  possibleRoutes: Route[] = [
+    {
+      url: '/profile',
+      label: 'Mon profil',
+      authorized: this.authProvider.isLoggedIn(),
+    },
     {
       url: '/home',
       label: 'Qui somme nous',
@@ -57,6 +53,11 @@ export class Navbar {
       url: '/partner',
       label: 'Partenaires',
       authorized: true,
+    },
+    {
+      url: '/user',
+      label: 'Utilisateurs',
+      authorized: this.authProvider.isLoggedIn(),
     },
   ];
 

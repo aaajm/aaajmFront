@@ -22,7 +22,9 @@ export class AuthProvider {
   token = this._token.asReadonly();
   currentUser = this._currentUser.asReadonly();
 
-  isLoggedIn = computed(() => this.currentUser() && this.token());
+  isLoggedIn = computed(
+    () => this.currentUser() != null && this.token() != null
+  );
   isAdmin = computed(() => this.currentUser()?.role == 'ADMIN');
 
   labeledRole = {
@@ -46,7 +48,7 @@ export class AuthProvider {
     localStorage.clear();
     this._currentUser.set(null);
     this._token.set(null);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/authentication/signin']);
   }
 }
 
