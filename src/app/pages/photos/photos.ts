@@ -2,7 +2,7 @@ import {PhotoGallery} from '@/app/components/photo-gallery';
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'photos-page',
+  selector: 'app-photos',
   standalone: true,
   imports: [PhotoGallery],
   templateUrl: './photos.html',

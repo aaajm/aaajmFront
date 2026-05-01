@@ -22,10 +22,10 @@
         "./src/app/*"
       ],
       "@aaajm/client": [
-        "./src/app/client/index.ts"
+        "./src/app/core/api-client.ts"
       ],
-      "@aaajm/client/*": [
-        "./src/app/client/*"
+      "@aaajm/client/zod": [
+        "./src/app/core/zod-client.ts"
       ]
     }
   },

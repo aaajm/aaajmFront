@@ -42,7 +42,7 @@ export class Login {
   resetState = inject(HttpStateService);
 
   screen = inject(Screen);
-  form = this.formBuilder.group<Signin>(DEFAULT_LOGIN);
+  form = this.formBuilder.group<Signin>(DEFAULT_LOGIN());
 
   zodErrors = signal<Record<string, string | null>>({});
 

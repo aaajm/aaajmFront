@@ -1,0 +1,63 @@
+<form [formGroup]="photoForm" (ngSubmit)="submit()" class="flex flex-col gap-6">
+    <!-- Title -->
+    <div class="flex flex-col gap-2">
+        <label for="titre" class="text-sm font-semibold text-gray-700">Titre de la photo</label>
+        <p-inputGroup>
+            <input 
+                id="titre"
+                type="text" 
+                pInputText 
+                formControlName="titre" 
+                placeholder="Ex: Action Sociale 2024"
+                class="w-full"
+                [class.ng-invalid]="zodErrors()['titre']"
+                [class.ng-dirty]="zodErrors()['titre']"
+            />
+        </p-inputGroup>
+        @if (zodErrors()['titre']) {
+            <small class="text-red-500">{{ zodErrors()['titre'] }}</small>
+        }
+    </div>
+
+    <!-- Description -->
+    <div class="flex flex-col gap-2">
+        <label for="description" class="text-sm font-semibold text-gray-700">Description (Optionnel)</label>
+        <textarea 
+            id="description"
+            rows="3"
+            pInputTextarea 
+            formControlName="description" 
+            placeholder="Décrivez brièvement cette photo..."
+            class="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 transition-colors"
+        ></textarea>
+    </div>
+
+    <!-- Image Upload -->
+    <div class="flex flex-col gap-2">
+        <label class="text-sm font-semibold text-gray-700">Image</label>
+        <file-uploader 
+            label="Choisir une image"
+            [multiple]="false"
+            accept="image/*"
+            (onSelect)="onSelectImage($event)"
+        ></file-uploader>
+        @if (imageFile()) {
+            <div class="text-xs text-green-600 flex items-center gap-1 mt-1">
+                <i class="pi pi-check-circle"></i>
+                Image sélectionnée: {{ imageFile()?.name }}
+            </div>
+        }
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex justify-end pt-4">
+        <p-button 
+            type="submit" 
+            label="Ajouter la photo" 
+            icon="pi pi-plus"
+            [loading]="submitPhotoState.isLoading()"
+            [disabled]="submitPhotoState.isLoading()"
+            styleClass="p-button-primary px-8"
+        ></p-button>
+    </div>
+</form>

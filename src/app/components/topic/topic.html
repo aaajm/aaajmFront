@@ -24,8 +24,8 @@
               ></p-avatar>
               <div class="flex flex-col">
                 <span class="text-xl font-bold"
-                  >{{topic.createdBy.firstname || ""}}
-                  {{topic.createdBy.lastname || ""}}</span
+                  >{{topic.createdBy?.firstname || ""}}
+                  {{topic.createdBy?.lastname || ""}}</span
                 >
                 <span class="text-gray-500 font-sans">Modérateur</span>
               </div>
