@@ -23,43 +23,45 @@ export class SidebarContent {
   readonly loggedUser = computed(() => this.authProvider.currentUser());
   readonly currentUrl = computed(() => this.router.url);
 
-  possibleRoutes: Route[] = [
-    {
-      url: '/profile',
-      label: 'Mon profil',
-      authorized: this.authProvider.isLoggedIn(),
-    },
-    {
-      url: '/home',
-      label: 'Qui somme nous',
-      authorized: true,
-    },
-    {
-      url: '/member',
-      label: 'Nos membres',
-      authorized: true,
-    },
-    {
-      url: '/album',
-      label: 'Galerie',
-      authorized: true,
-    },
-    {
-      url: '/content',
-      label: 'Contenu',
-      authorized: true,
-    },
-    {
-      url: '/partner',
-      label: 'Partenaires',
-      authorized: true,
-    },
-    {
-      url: '/user',
-      label: 'Utilisateurs',
-      authorized: this.authProvider.isLoggedIn(),
-    },
-  ];
+  possibleRoutes = computed<Route[]>(() => {
+    return [
+      {
+        url: '/profile',
+        label: 'Mon profil',
+        authorized: this.authProvider.isLoggedIn(),
+      },
+      {
+        url: '/home',
+        label: 'Qui somme nous',
+        authorized: true,
+      },
+      {
+        url: '/member',
+        label: 'Nos membres',
+        authorized: true,
+      },
+      {
+        url: '/album',
+        label: 'Galerie',
+        authorized: true,
+      },
+      {
+        url: '/content',
+        label: 'Contenu',
+        authorized: true,
+      },
+      {
+        url: '/partner',
+        label: 'Partenaires',
+        authorized: true,
+      },
+      {
+        url: '/user',
+        label: 'Utilisateurs',
+        authorized: this.authProvider.isLoggedIn(),
+      },
+    ];
+  });
 
   navigate(route: string) {
     this.router.navigate([route]);

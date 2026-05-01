@@ -6,7 +6,7 @@ z.config({
 
     switch (error.code) {
       case 'invalid_type':
-        message = `La valeur doit être un ${type[error.expected]}.`;
+        message = `La valeur doit être ${type[error.expected]}.`;
         break;
       case 'too_big':
         if (error.origin == 'number') message = `Maximum ${error.maximum}.`;
@@ -38,7 +38,8 @@ const format: {[key: string]: string} = {
 };
 
 const type: {[key: string]: string} = {
-  string: 'chaine de caractères',
-  number: 'de nombre',
+  string: 'une chaine de caractères',
+  number: 'un nombre',
   array: 'un élément valide',
+  date: 'une date',
 };

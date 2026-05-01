@@ -25,7 +25,7 @@ export class AuthProvider {
   isLoggedIn = computed(
     () => this.currentUser() != null && this.token() != null
   );
-  isAdmin = computed(() => this.currentUser()?.role == 'ADMIN');
+  isAdmin = computed(() => this.currentUser()?.role == 'SUPER_ADMIN');
 
   labeledRole = {
     [Admin]: 'Administrateur',

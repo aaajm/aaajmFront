@@ -1,0 +1,84 @@
+<section class="p-10 h-full w-full">
+  <div class="flex flex-col mb-12 gap-6">
+    <div class="flex items-center gap-5 justify-between w-full">
+      <h2 class="text-4xl font-bold text-[#D03830] tracking-tight">
+        Gérer les utilisateurs
+      </h2>
+      <p-button
+        label="Ajouter"
+        icon="pi pi-plus"
+        class="p-2 rounded-2xl bg-black text-white"
+        (click)="openDialog()"
+      ></p-button>
+    </div>
+    <p-table
+      [value]="users()"
+      [stripedRows]="true"
+      size="small"
+      [loading]="userResource.isLoading()"
+    >
+      <ng-template #header>
+        <tr>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Email</th>
+          <th>Téléphone</th>
+          <th>Statut</th>
+          <th>Rôle</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-user>
+        <tr>
+          <td>{{user.firstname}}</td>
+          <td>{{ user.lastname }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.phone }}</td>
+          <td>
+            <p-tag
+              [severity]="user.status == Status.Enabled ? 'success' : 'danger'"
+              [value]="labeledStatus[user.status]"
+            ></p-tag>
+          </td>
+          <td>
+            <p-tag
+              [severity]="tagSeverity[user.role]"
+              [value]="labeledRole[user.role]"
+            ></p-tag>
+          </td>
+          <td class="relative">
+            <p-button
+              icon="pi pi-pencil"
+              pTooltip="Modifier"
+              tooltipPosition="bottom"
+              class="mr-2"
+              [rounded]="true"
+              [outlined]="true"
+              (click)="openDialog(user)"
+            />
+            @if(authProvider.isAdmin()){
+            <p-button
+              icon="pi pi-key"
+              pTooltip="Inviter"
+              tooltipPosition="bottom"
+              severity="danger"
+              [rounded]="true"
+              [outlined]="true"
+            />
+            }
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</section>
+
+<p-dialog
+  header="Créer et modifier des informations"
+  [(visible)]="visibleDialog"
+  (onHide)="closeDialog()"
+  class="w-screen"
+  [breakpoints]="{ '1199px': '75vw', '575px': '100vw' }"
+>
+  <user-form [user]="selectedUser()"></user-form>
+</p-dialog>

@@ -5,10 +5,12 @@ import {NotFound} from '@/app/pages/not-found';
 import {PartnerPage} from '@/app/pages/partner';
 import {TopicPage, TopicSummaryPage} from '@/app/pages/topic';
 import {VerifyEmail} from '@/app/pages/verify-email';
+import {AdminGuard} from '@/app/utils';
 import {Routes} from '@angular/router';
 import {TopicForm} from './components/topic';
 import {ChangePassword} from './pages/change-password';
 import {MemberPage} from './pages/member';
+import {UserPage} from './pages/user';
 
 export const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -27,6 +29,7 @@ export const routes: Routes = [
       },
       {path: 'content/:topicId', component: TopicPage},
       {path: 'topic-form', component: TopicForm},
+      {path: 'user', component: UserPage, canActivate: [AdminGuard]},
       {path: 'content', component: TopicSummaryPage},
       {path: 'member', component: MemberPage},
       {path: '**', component: NotFound},

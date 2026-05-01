@@ -1,0 +1,166 @@
+<div class="p-10 flex flex-col h-full justify-center items-center">
+  <form
+    (submit)="submit()"
+    [formGroup]="form"
+    class="flex flex-col gap-6 w-full"
+  >
+    <file-uploader
+      label="Photo de profil"
+      [multiple]="false"
+      (onSelect)="onSelectLogo($event)"
+    ></file-uploader>
+    <div class="flex flex-col md:flex-row gap-6">
+      <p-inputgroup class="flex flex-col gap-2">
+        <label class="font-bold text-gray-600">Nom</label>
+        <input
+          type="text"
+          formControlName="firstname"
+          pInputText
+          [invalid]="zodErrors()['firstname']"
+          placeholder="Jean"
+          class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+        />
+        <small class="text-red-400 font-bold"
+          >{{ zodErrors()['firstname'] }}</small
+        >
+      </p-inputgroup>
+      <p-inputgroup class="flex flex-col gap-2">
+        <label class="font-bold text-gray-600">Prénom</label>
+        <input
+          type="text"
+          formControlName="lastname"
+          pInputText
+          [invalid]="zodErrors()['lastname']"
+          placeholder="Dupont"
+          class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+        />
+        <small class="text-red-400 font-bold"
+          >{{ zodErrors()['lastname'] }}</small
+        >
+      </p-inputgroup>
+    </div>
+    <div class="flex flex-col md:flex-row gap-6">
+      <p-inputgroup class="flex flex-col gap-2">
+        <label class="font-bold text-gray-600">Date de naissance</label>
+        <p-datepicker
+          [showIcon]="true"
+          inputStyleClass="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+          class="w-full bg-slate-100 rounded-lg outline-none"
+          formControlName="birthdate"
+          dateFormat="yy-mm-dd"
+          dataType="string"
+          placeholder="yyyy-mm-dd"
+        />
+        <small class="text-red-400 font-bold"
+          >{{ zodErrors()['birthdate'] }}</small
+        >
+      </p-inputgroup>
+      <p-inputgroup class="flex flex-col gap-2">
+        <label class="font-bold text-gray-600">Sexe</label>
+        <p-select
+          [options]="[{name: 'Masculin', code: 'M'}, {name: 'Féminin', code: 'F'}]"
+          optionLabel="name"
+          optionValue="code"
+          formControlName="sex"
+          placeholder="Sexe"
+          class="w-full bg-slate-100 border-none rounded-lg outline-none"
+        />
+        <small class="text-red-400 font-bold">{{ zodErrors()['sex'] }}</small>
+      </p-inputgroup>
+    </div>
+    <div class="flex flex-col md:flex-row gap-6">
+      <p-inputgroup class="flex flex-col gap-2">
+        <label class="font-bold text-gray-600">Adresse</label>
+        <input
+          type="text"
+          formControlName="address"
+          pInputText
+          [invalid]="zodErrors()['address']"
+          placeholder="123 Rue de la Paix"
+          class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+        />
+        <small class="text-red-400 font-bold"
+          >{{ zodErrors()['address'] }}</small
+        >
+      </p-inputgroup>
+      <p-inputgroup class="flex flex-col gap-2">
+        <label class="font-bold text-gray-600">Email</label>
+        <input
+          type="email"
+          formControlName="email"
+          pInputText
+          [invalid]="zodErrors()['email']"
+          placeholder="jean.dupont@example.com"
+          class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+        />
+        <small class="text-red-400 font-bold">{{ zodErrors()['email'] }}</small>
+      </p-inputgroup>
+    </div>
+    <div class="flex flex-col md:flex-row gap-6">
+      <p-inputgroup class="flex flex-col gap-2">
+        <label class="font-bold text-gray-600">Tel / WhatsApp</label>
+        <input
+          type="tel"
+          formControlName="phone"
+          pInputText
+          [invalid]="zodErrors()['phone']"
+          pInputMask="999 99 999 99"
+          placeholder="038 09 209 41"
+          class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+        />
+        <small class="text-red-400 font-bold">{{ zodErrors()['phone'] }}</small>
+      </p-inputgroup>
+      <p-inputgroup class="flex flex-col gap-2">
+        <label class="font-bold text-gray-600">Poste</label>
+        <input
+          type="text"
+          formControlName="postOffice"
+          pInputText
+          [invalid]="zodErrors()['postOffice']"
+          placeholder="Directrice de projet"
+          class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+        />
+        <small class="text-red-400 font-bold"
+          >{{ zodErrors()['postOffice'] }}</small
+        >
+      </p-inputgroup>
+    </div>
+    @if(authProvider.isAdmin()){
+    <div class="flex flex-col md:flex-row gap-6">
+      <p-inputgroup class="flex flex-col gap-2">
+        <label class="font-bold text-gray-600">Status</label>
+        <p-select
+          [options]="[ {name: 'Désactivé', code: 'DISABLED'},{name: 'Activé', code: 'ENABLED'}]"
+          optionLabel="name"
+          optionValue="code"
+          formControlName="status"
+          placeholder="Status"
+          class="w-full bg-slate-100 border-none rounded-lg outline-none"
+        />
+        <small class="text-red-400 font-bold"
+          >{{ zodErrors()['status'] }}</small
+        >
+      </p-inputgroup>
+      <p-inputgroup class="flex flex-col gap-2">
+        <label class="font-bold text-gray-600">Rôle</label>
+        <p-select
+          [options]="[ {name: 'Aucun', code: 'NONE'},{name: 'Administrateur', code: 'ADMIN'},{name: 'G.Administrateur', code: 'SUPER_ADMIN'}]"
+          optionLabel="name"
+          optionValue="code"
+          formControlName="role"
+          placeholder="Rôle"
+          class="w-full bg-slate-100 border-none rounded-lg outline-none"
+        />
+        <small class="text-red-400 font-bold">{{ zodErrors()['role'] }}</small>
+      </p-inputgroup>
+    </div>
+    }
+    <p-button
+      type="submit"
+      [loading]="userState.isLoading()"
+      [raised]="true"
+      label="Enregistrer"
+      styleClass="w-full text-white font-bold py-2 rounded-lg bg-[#D03830]"
+    />
+  </form>
+</div>
