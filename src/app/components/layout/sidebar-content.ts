@@ -60,6 +60,11 @@ export class SidebarContent {
         label: 'Utilisateurs',
         authorized: this.authProvider.isLoggedIn(),
       },
+      {
+        url: '/topic',
+        label: 'Actialités',
+        authorized: this.authProvider.isLoggedIn(),
+      },
     ];
   });
 

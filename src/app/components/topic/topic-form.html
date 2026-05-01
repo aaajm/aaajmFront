@@ -1,93 +1,77 @@
-<div
-  class="flex {{screen.isMobile() ? '' : 'items-center'}} justify-center h-full mb-20"
->
-  <div class="w-full max-w-xl">
-    <div
-      class="bg-white p-10 rounded-2xl flex flex-col h-full justify-center items-center shadow-xl border-2 border-slate-50"
+<div class="p-10 flex flex-col h-full justify-center items-center">
+  <form
+    (submit)="submit()"
+    [formGroup]="form"
+    class="flex flex-col gap-6 w-full"
+  >
+    @if(topicResource.isLoading()) {
+    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+    }
+    <p-inputgroup class="flex flex-col gap-2">
+      <label class="font-bold text-gray-600">Titre</label>
+      <input
+        type="text"
+        formControlName="title"
+        pInputText
+        [invalid]="zodErrors()['title']"
+        placeholder="Titre"
+        class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+      />
+      <small class="text-red-400 font-bold">{{ zodErrors()['title'] }}</small>
+    </p-inputgroup>
+    <file-uploader
+      label="Contenu médiatique"
+      [multiple]="true"
+      (onSelect)="onSelectFile($event)"
+    />
+    <p-editor
+      formControlName="description"
+      class="border-2 rounded-md min-h-48"
     >
-      <h3 class="text-3xl font-bold text-teal-950 mb-8">Publié de contenu</h3>
+      <ng-template pTemplate="header">
+        <span class="ql-formats">
+          <select class="ql-header">
+            <option value="1">Titre 1</option>
+            <option value="2">Titre 2</option>
+            <option value="">Normal</option>
+          </select>
+        </span>
 
-      <form
-        (submit)="submit()"
-        [formGroup]="form"
-        class="flex flex-col gap-6 w-full"
-      >
-        <p-inputgroup class="flex flex-col gap-2">
-          <label class="font-bold text-gray-600">Titre</label>
-          <input
-            type="text"
-            formControlName="title"
-            pInputText
-            [invalid]="zodErrors()['title']"
-            placeholder="Titre"
-            class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
-          />
-          <small class="text-red-400 font-bold"
-            >{{ zodErrors()['title'] }}</small
-          >
-        </p-inputgroup>
-        <file-uploader
-          label="Contenu médiatique"
-          [multiple]="true"
-          (onSelect)="onSelectFile($event)"
-        />
-        <p-editor
-          formControlName="description"
-          class="border-2 rounded-md min-h-48"
-        >
-          <ng-template pTemplate="header">
-            <span class="ql-formats">
-              <select class="ql-header">
-                <option value="1">Titre 1</option>
-                <option value="2">Titre 2</option>
-                <option value="">Normal</option>
-              </select>
-            </span>
+        <span class="ql-formats">
+          <select class="ql-font">
+            <option selected></option>
+            <option value="serif"></option>
+            <option value="monospace"></option>
+          </select>
+        </span>
 
-            <span class="ql-formats">
-              <select class="ql-font">
-                <option selected></option>
-                <option value="serif"></option>
-                <option value="monospace"></option>
-              </select>
-            </span>
+        <span class="ql-formats">
+          <button type="button" class="ql-bold" aria-label="Bold"></button>
+          <button type="button" class="ql-italic" aria-label="Italic"></button>
+          <button
+            type="button"
+            class="ql-underline"
+            aria-label="Underline"
+          ></button>
+        </span>
 
-            <span class="ql-formats">
-              <button type="button" class="ql-bold" aria-label="Bold"></button>
-              <button
-                type="button"
-                class="ql-italic"
-                aria-label="Italic"
-              ></button>
-              <button
-                type="button"
-                class="ql-underline"
-                aria-label="Underline"
-              ></button>
-            </span>
+        <span class="ql-formats">
+          <select class="ql-color" title="Couleur du texte"></select>
+          <select class="ql-background" title="Couleur de surlignage"></select>
+        </span>
 
-            <span class="ql-formats">
-              <select class="ql-color" title="Couleur du texte"></select>
-              <select
-                class="ql-background"
-                title="Couleur de surlignage"
-              ></select>
-            </span>
-
-            <span class="ql-formats">
-              <button type="button" class="ql-list" value="ordered"></button>
-              <button type="button" class="ql-list" value="bullet"></button>
-            </span>
-          </ng-template>
-        </p-editor>
-        <p-button
-          type="submit"
-          [raised]="true"
-          [loading]="topicState.isLoading()"
-          label="Enregistrer"
-          styleClass="w-full text-white font-bold py-2 rounded-lg bg-[#D03830]"
-        />
-      </form>
-    </div>
-  </div>
+        <span class="ql-formats">
+          <button type="button" class="ql-list" value="ordered"></button>
+          <button type="button" class="ql-list" value="bullet"></button>
+        </span>
+      </ng-template>
+    </p-editor>
+    <p-button
+      type="submit"
+      [raised]="true"
+      [loading]="topicState.isLoading()"
+      label="Enregistrer"
+      styleClass="w-full text-white font-bold py-2 rounded-lg bg-[#D03830]"
+    />
+  </form>
 </div>

@@ -1,14 +1,28 @@
 import {AuthProvider} from '@/app/providers';
 import {HttpStateService} from '@/app/services';
-import {DEFAULT_TOPIC, newId, runZodValidation, Screen} from '@/app/utils';
-import {CreateTopic, TopicService} from '@aaajm/client';
+import {
+  DEFAULT_TOPIC,
+  newId,
+  runZodValidation,
+  Screen,
+  ToastService,
+} from '@/app/utils';
+import {CreateTopic, Topic, TopicService} from '@aaajm/client';
 import {createTopicSchema} from '@aaajm/client/zod';
-import {Component, inject, signal} from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  input,
+  resource,
+  signal,
+} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ButtonModule} from 'primeng/button';
 import {EditorModule} from 'primeng/editor';
 import {InputGroup} from 'primeng/inputgroup';
 import {InputTextModule} from 'primeng/inputtext';
+import {firstValueFrom} from 'rxjs';
 import {Fileupload} from '../file-upload';
 
 @Component({
@@ -25,6 +39,8 @@ import {Fileupload} from '../file-upload';
   templateUrl: './topic-form.html',
 })
 export class TopicForm {
+  topicId = input<string | null>(null);
+  toast = inject(ToastService);
   private formBuilder = inject(FormBuilder);
   authProvider = inject(AuthProvider);
   topicService = inject(TopicService);
@@ -32,6 +48,22 @@ export class TopicForm {
   files = signal<File[] | null>(null);
   screen = inject(Screen);
   topicState = inject(HttpStateService);
+
+  topicResource = resource({
+    params: () => ({id: this.topicId()!}),
+    loader: ({params}): Promise<Topic> => {
+      return firstValueFrom(this.topicService.getOneTopic(params.id));
+    },
+  });
+
+  constructor() {
+    effect(() => {
+      if (this.topicResource.hasValue()) {
+        const topic = this.topicResource.value();
+        this.form.patchValue(topic);
+      }
+    });
+  }
 
   zodErrors = signal<Record<string, string | null>>({});
 
@@ -57,7 +89,9 @@ export class TopicForm {
         {...parsedValue.data, authorId: this.authProvider.currentUser()!.id},
         this.files()!
       ),
-      onSuccess: () => {},
+      onSuccess: () => {
+        this.toast.message('success', 'Succès', 'Contenu mis à jour');
+      },
     });
   }
 }
