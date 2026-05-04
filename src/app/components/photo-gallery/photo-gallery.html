@@ -1,1 +1,170 @@
-<p>photo-gallery works!</p>
+<div class="container mx-auto py-8 px-4">
+  <div
+    class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden min-h-[600px]"
+  >
+    <header class="p-8 border-b border-gray-50">
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-4">
+          @if (selectedAlbum()) {
+          <button
+            (click)="backToAlbums()"
+            class="p-2 hover:bg-gray-100 rounded-full transition-colors group"
+          >
+            <i
+              class="pi pi-arrow-left text-gray-600 transition-transform group-hover:-translate-x-1"
+            ></i>
+          </button>
+          }
+          <div>
+            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">
+              {{ selectedAlbum() ? selectedAlbum()?.title : 'Photos' }}
+            </h1>
+            <p class="text-gray-500 mt-1 text-sm">
+              {{ selectedAlbum() ? 'Album par ' +
+              (selectedAlbum()?.createdBy?.firstname || '') + ' ' +
+              (selectedAlbum()?.createdBy?.lastname || '') : 'Découvrez nos
+              moments partagés et albums souvenirs.' }}
+            </p>
+          </div>
+        </div>
+
+        @if (albumResource.isLoading()) {
+        <i class="pi pi-spin pi-spinner text-blue-600 text-2xl"></i>
+        }
+      </div>
+
+      <!-- Navigation Tabs (Only visible when no album is selected) -->
+      @if (!selectedAlbum()) {
+      <nav
+        class="flex gap-10 border-b border-gray-100 overflow-x-auto pb-px no-scrollbar"
+      >
+        @for (tab of tabs; track tab.id) {
+        <button
+          (click)="setActiveTab(tab.id)"
+          class="pb-4 text-sm font-bold transition-all duration-300 relative whitespace-nowrap px-2"
+          [class.text-blue-600]="activeTab === tab.id"
+          [class.text-gray-400]="activeTab !== tab.id"
+          [class.hover:text-gray-600]="activeTab !== tab.id"
+        >
+          {{ tab.label }} @if (activeTab === tab.id) {
+          <div
+            class="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 rounded-t-full shadow-[0_-2px_10px_rgba(37,99,235,0.4)]"
+          ></div>
+          }
+        </button>
+        }
+      </nav>
+      }
+    </header>
+
+    <!-- Content Area -->
+    <div class="p-8 bg-gray-50/30">
+      <!-- Tab: Photos (All Photos) -->
+      @if (!selectedAlbum() && activeTab === 'vos-photos') {
+      <div
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500"
+      >
+        @for (photo of files(); track $index) {
+        <div
+          class="aspect-square relative group overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-xl transition-all duration-500 border border-white"
+        >
+          <img
+            [src]="photo.file_url"
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            loading="lazy"
+          />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4"
+          ></div>
+        </div>
+
+        } @empty {
+        <div class="col-span-full py-20 text-center text-gray-500">
+          <i class="pi pi-image text-5xl mb-4 block text-gray-300"></i>
+          <p class="text-lg">Aucune photo trouvée.</p>
+        </div>
+        }
+      </div>
+      }
+
+      <!-- Tab: Albums -->
+      albumdetails @if (!selectedAlbum() && activeTab === 'albums') {
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500"
+      >
+        @for (album of albums(); track album.id) {
+        <div (click)="selectAlbum(album)" class="group cursor-pointer">
+          <div
+            class="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-md group-hover:shadow-2xl transition-all duration-500 mb-4 border-4 border-white"
+          >
+            <!-- Stacked Effect -->
+            <div
+              class="absolute inset-0 bg-gray-200 translate-x-2 -translate-y-2 rounded-3xl -z-10 group-hover:translate-x-3 group-hover:-translate-y-3 transition-transform duration-500"
+            ></div>
+            <div
+              class="absolute inset-0 bg-gray-300 translate-x-1 -translate-y-1 rounded-3xl -z-20 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform duration-500"
+            ></div>
+
+            @if (album.imageCoverage) {
+            <img
+              [src]="album.imageCoverage"
+              class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+            />
+            } @else {
+            <div
+              class="w-full h-full flex items-center justify-center bg-slate-100"
+            >
+              <i class="pi pi-images text-4xl text-gray-300"></i>
+            </div>
+            }
+            <div
+              class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500"
+            ></div>
+          </div>
+          <h3
+            class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300"
+          >
+            {{ album.title }}
+          </h3>
+          <p class="text-xs text-gray-500 mt-1">
+            Créé par {{ album.createdBy?.firstname || '' }} {{
+            album.createdBy?.lastname || '' }}
+          </p>
+        </div>
+        } @empty {
+        <div class="col-span-full py-20 text-center text-gray-500">
+          <i class="pi pi-folder-open text-5xl mb-4 block text-gray-300"></i>
+          <p class="text-lg">Aucun album trouvé.</p>
+        </div>
+        }
+      </div>
+      }
+
+      <!-- Single Album Detail View -->
+      @if (selectedAlbum()) {
+      <div
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 animate-in fade-in slide-in-from-right-4 duration-500"
+      >
+        @for (media of albumsDetails()?.medias; track media.id) {
+        <div
+          class="aspect-square relative group overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-xl transition-all duration-500 border border-white"
+        >
+          <img
+            [src]="media.file_url"
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          />
+          <div
+            class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"
+          ></div>
+        </div>
+        } @empty {
+        <div class="col-span-full py-20 text-center text-gray-500">
+          <i class="pi pi-images text-5xl mb-4 block text-gray-300"></i>
+          <p class="text-lg">Cet album est vide.</p>
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </div>
+</div>
