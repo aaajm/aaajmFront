@@ -1,6 +1,12 @@
 import {AuthProvider} from '@/app/providers';
 import {HttpStateService} from '@/app/services';
-import {DEFAULT_USER, newId, runZodValidation, Screen} from '@/app/utils';
+import {
+  DEFAULT_USER,
+  newId,
+  runZodValidation,
+  Screen,
+  ToastService,
+} from '@/app/utils';
 import {User, UserService} from '@aaajm/client';
 import {userSchema} from '@aaajm/client/zod';
 import {Component, effect, inject, input, signal} from '@angular/core';
@@ -36,6 +42,7 @@ export class UserForm {
   private formBuilder = inject(FormBuilder);
   logoFile = signal<File | null>(null);
   authProvider = inject(AuthProvider);
+  toast = inject(ToastService);
 
   constructor() {
     effect(() => {
@@ -66,6 +73,14 @@ export class UserForm {
 
     await this.userState.request({
       request: this.userService.crupdateUser(parsedValue.data as User),
+      onSuccess: (user: User) => {
+        this.toast.message(
+          'success',
+          'Succès',
+          `L'utilisateur a été enregistré avec succès.`
+        );
+        this.authProvider.setUser(user);
+      },
     });
   }
 }

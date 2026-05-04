@@ -3,6 +3,7 @@ import {HomePage} from '@/app/pages/home';
 import {Login} from '@/app/pages/login';
 import {NotFound} from '@/app/pages/not-found';
 import {PartnerPage} from '@/app/pages/partner';
+import {ProfilePage} from '@/app/pages/profile';
 import {TopicManage, TopicPage, TopicSummaryPage} from '@/app/pages/topic';
 import {VerifyEmail} from '@/app/pages/verify-email';
 import {AdminGuard} from '@/app/utils';
@@ -18,6 +19,7 @@ export const routes: Routes = [
     component: Layout,
     children: [
       {path: 'home', component: HomePage},
+      {path: 'profile', component: ProfilePage},
       {path: 'authentication/signin', component: Login},
       {path: 'authentication/verify-email', component: VerifyEmail},
       {path: 'change-password', component: ChangePassword},
