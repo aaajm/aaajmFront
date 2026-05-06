@@ -143,7 +143,7 @@
                       </button>
                       <button
                         type="button"
-                        (click)="deleteAlbum(album)"
+                        (click)="confirmDeleteAlbum($event,album.id)"
                         class="p-2 bg-red-50 hover:bg-red-100 rounded-xl text-red-600 shadow-sm"
                         title="Supprimer l'album"
                       >
@@ -199,7 +199,7 @@
                         </div>
                         <button
                           type="button"
-                          (click)="confirmDelete($event, media.id)"
+                          (click)="confirmDeleteFile($event, media.id)"
                           title="Supprimer"
                           class="absolute top-0 right-0 bg-red-500 text-white rounded-bl-xl w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors z-10"
                         >
@@ -207,7 +207,6 @@
                         </button>
                       </ng-template>
                     </p-image>
-                    <p-confirmdialog />
                   </div>
                   } @empty {
                   <div class="text-[10px] text-gray-400 italic">
@@ -277,3 +276,5 @@
     </div>
   </p-tabs>
 </form>
+
+<p-confirmdialog />

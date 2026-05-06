@@ -1,7 +1,13 @@
 import {AuthProvider} from '@/app/providers';
 import {HttpStateService} from '@/app/services';
 import {DEFAULT_ALBUM, newId, ToastService} from '@/app/utils';
-import {AlbumSummary, CreateAlbum, FileInfo, FileService} from '@aaajm/client';
+import {
+  Album,
+  AlbumSummary,
+  CreateAlbum,
+  FileInfo,
+  FileService,
+} from '@aaajm/client';
 import {CommonModule} from '@angular/common';
 import {HttpClient} from '@angular/common/http';
 import {
@@ -64,16 +70,17 @@ export class PhotoForm implements OnInit {
 
   // Data
   albumsResource = resource({
-    loader: () => firstValueFrom(this.fileService.getAlbumSummary('')),
+    loader: (): Promise<AlbumSummary[]> =>
+      firstValueFrom(this.fileService.getAlbumSummary('')).catch(() => []),
   });
 
-  albums = computed(() => this.albumsResource.value() ?? []);
+  albums = computed(() => this.albumsResource.value() || []);
 
   // Détails de l'album sélectionné (pour gérer les photos)
   selectedAlbumId = signal<string | null>(null);
   selectedAlbumDetailsResource = resource({
     params: () => ({id: this.selectedAlbumId()}),
-    loader: async ({params}) => {
+    loader: async ({params}): Promise<Album | null> => {
       if (!params.id) return null;
       const album = await firstValueFrom(
         this.fileService.getOneAlbum(params.id)
@@ -95,12 +102,12 @@ export class PhotoForm implements OnInit {
 
   // Photos sans album (ex: publications)
   orphansResource = resource({
-    loader: () =>
+    loader: (): Promise<FileInfo[]> =>
       firstValueFrom(
         this.http.get<FileInfo[]>(
           `${import.meta.env.NG_APP_API_URL}/files/orphans`
         )
-      ),
+      ).catch(() => []),
   });
 
   orphanPhotos = computed(() => this.orphansResource.value() ?? []);
@@ -154,7 +161,7 @@ export class PhotoForm implements OnInit {
     this.selectedAlbumId.set(albumId);
   }
 
-  confirmDelete(event: Event, fileId: string) {
+  confirmDeleteFile(event: Event, fileId: string) {
     event.stopPropagation();
     this.confirmationService.confirm({
       target: event.target as EventTarget,
@@ -175,8 +182,29 @@ export class PhotoForm implements OnInit {
       accept: () => {
         this.deletePhoto(fileId);
       },
-      reject: () => {
-        // TODO: remove fileFrom the current delete list
+    });
+  }
+
+  confirmDeleteAlbum(event: Event, fileId: string) {
+    event.stopPropagation();
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Voulez-vous vraiment supprimer cette album?',
+      header: 'Cette action est irréversible',
+      icon: 'pi pi-info-circle',
+      rejectLabel: 'Annuler',
+      rejectButtonProps: {
+        label: 'Annuler',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Supprimer',
+        severity: 'danger',
+      },
+
+      accept: () => {
+        this.deleteAlbum(fileId);
       },
     });
   }
@@ -225,9 +253,9 @@ export class PhotoForm implements OnInit {
     });
   }
 
-  async deleteAlbum(album: AlbumSummary) {
+  async deleteAlbum(albumId: string) {
     await this.submitPhotoState.request({
-      request: this.fileService.removeCompleteAlbum(album.id, true),
+      request: this.fileService.removeCompleteAlbum(albumId, true),
       onSuccess: () => {
         this.toast.message('success', 'Album supprimé');
         this.albumsResource.reload();
