@@ -1,0 +1,382 @@
+<form [formGroup]="photoForm" (ngSubmit)="submit()" class="flex flex-col gap-6">
+    <!-- Sélecteur de mode -->
+    <div class="flex p-1 bg-gray-100 rounded-xl w-full">
+        <button 
+            type="button"
+            (click)="toggleAlbumMode(true)"
+            class="flex-1 py-2 text-sm font-bold rounded-lg transition-all duration-300"
+            [class.bg-white]="isNewAlbum()"
+            [class.shadow-sm]="isNewAlbum()"
+            [class.text-blue-600]="isNewAlbum()"
+            [class.text-gray-500]="!isNewAlbum()"
+        >
+            Nouvel Album
+        </button>
+        <button 
+            type="button"
+            (click)="toggleAlbumMode(false)"
+            class="flex-1 py-2 text-sm font-bold rounded-lg transition-all duration-300"
+            [class.bg-white]="!isNewAlbum()"
+            [class.shadow-sm]="!isNewAlbum()"
+            [class.text-blue-600]="!isNewAlbum()"
+            [class.text-gray-500]="isNewAlbum()"
+        >
+            Album Existant
+        </button>
+    </div>
+
+    <!-- Titre (Nouveau Mode) -->
+    @if (isNewAlbum()) {
+    <div class="flex flex-col gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
+        <label for="title" class="text-sm font-semibold text-gray-700">
+            Titre du nouvel album <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+            <input 
+                id="title"
+                type="text" 
+                pInputText 
+                formControlName="title" 
+                placeholder="Ex: Action Sociale 2024"
+                class="w-full !rounded-xl !border-gray-200 focus:!border-blue-500 focus:!ring-2 focus:!ring-blue-100 transition-all"
+            />
+        </div>
+        @if (photoForm.get('title')?.invalid && photoForm.get('title')?.touched) {
+            <small class="text-red-500 flex items-center gap-1">
+                <i class="pi pi-exclamation-circle"></i> Le titre est obligatoire
+            </small>
+        }
+    </div>
+    } @else {
+    <!-- Sélection Album (Mode Existant) -->
+    <div class="flex flex-col gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+        <label class="text-sm font-semibold text-gray-700 flex justify-between items-center">
+            <span>Choisir un album <span class="text-red-500">*</span></span>
+            <span class="text-[10px] text-gray-400 font-normal">{{ albums().length }} albums disponibles</span>
+        </label>
+        
+        <div class="grid grid-cols-1 gap-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+            @for (album of albums(); track album.id) {
+                <div 
+                    (click)="selectAlbum(album.id)"
+                    class="group relative flex flex-col gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300"
+                    [class.border-blue-500]="photoForm.get('selectedAlbumId')?.value === album.id"
+                    [class.bg-blue-50/50]="photoForm.get('selectedAlbumId')?.value === album.id"
+                    [class.border-gray-100]="photoForm.get('selectedAlbumId')?.value !== album.id"
+                    [class.hover:border-blue-200]="photoForm.get('selectedAlbumId')?.value !== album.id"
+                >
+                    <!-- Checkmark pour l'album sélectionné -->
+                    @if (photoForm.get('selectedAlbumId')?.value === album.id) {
+                        <div class="absolute -top-2 -right-2 bg-blue-500 text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg animate-in zoom-in duration-300 z-10">
+                            <i class="pi pi-check text-xs font-bold"></i>
+                        </div>
+                    }
+
+                    <div class="flex gap-4 items-center">
+                        <!-- Mini couverture plus grande -->
+                        <div class="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 shadow-md relative group/cover">
+                            @if (album.imageCoverage) {
+                                <img [src]="album.imageCoverage" class="w-full h-full object-cover" />
+                                <div 
+                                    (click)="openAlbumInViewer($event, album.id)"
+                                    class="absolute inset-0 bg-black/40 opacity-0 group-hover/cover:opacity-100 transition-opacity flex items-center justify-center text-white cursor-zoom-in"
+                                >
+                                    <i class="pi pi-search-plus text-lg"></i>
+                                </div>
+                            } @else {
+                                <div class="w-full h-full flex items-center justify-center bg-slate-100">
+                                    <i class="pi pi-images text-gray-300 text-xl"></i>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="flex-1 min-w-0">
+                            @if (editingAlbumId() === album.id) {
+                                <div class="flex flex-col gap-2">
+                                    <input 
+                                        type="text" 
+                                        [(ngModel)]="editingTitle" 
+                                        [ngModelOptions]="{standalone: true}"
+                                        (click)="$event.stopPropagation()"
+                                        class="w-full text-sm p-2 border-2 border-blue-500 rounded-xl outline-none"
+                                        autofocus
+                                    />
+                                    <div class="flex gap-3">
+                                        <button 
+                                            (click)="saveAlbumTitle($event, album)"
+                                            class="px-3 py-1 bg-green-600 text-white text-[10px] font-bold rounded-lg shadow-sm hover:bg-green-700 transition-colors"
+                                        >
+                                            <i class="pi pi-check mr-1"></i>Enregistrer
+                                        </button>
+                                        <button 
+                                            (click)="cancelEdit($event)"
+                                            class="px-3 py-1 bg-gray-200 text-gray-600 text-[10px] font-bold rounded-lg hover:bg-gray-300 transition-colors"
+                                        >Annuler</button>
+                                    </div>
+                                </div>
+                            } @else {
+                                <div class="flex justify-between items-start">
+                                    <div class="text-sm font-bold text-gray-900 truncate flex-1">{{ album.title }}</div>
+                                    <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button 
+                                            (click)="startEditAlbum($event, album)"
+                                            class="p-2 bg-blue-50 hover:bg-blue-100 rounded-xl text-blue-600 shadow-sm"
+                                            title="Modifier le titre"
+                                        >
+                                            <i class="pi pi-pencil text-xs"></i>
+                                        </button>
+                                        <button 
+                                            (click)="deleteAlbum($event, album)"
+                                            class="p-2 bg-red-50 hover:bg-red-100 rounded-xl text-red-600 shadow-sm"
+                                            title="Supprimer l'album"
+                                        >
+                                            <i class="pi pi-trash text-xs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="text-xs text-gray-500 mt-1 flex items-center gap-2">
+                                    <span class="flex items-center gap-1">
+                                        <i class="pi pi-image text-[10px]"></i>
+                                        {{ $any(album).mediaCount || 0 }} photos
+                                    </span>
+                                    <span class="text-gray-300">•</span>
+                                    <span class="flex items-center gap-1">
+                                        <i class="pi pi-calendar text-[10px]"></i>
+                                        {{ album.createdAt | date:'dd/MM/yyyy' }}
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Liste des photos si sélectionné (pour suppression individuelle) -->
+                    @if (photoForm.get('selectedAlbumId')?.value === album.id && selectedAlbumDetails()) {
+                        <div class="mt-4 pt-4 border-t border-blue-100 animate-in fade-in slide-in-from-top-2 duration-500" (click)="$event.stopPropagation()">
+                            <div class="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-2">Gérer les photos existantes</div>
+                            <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                                @for (media of selectedAlbumDetails()?.medias; track media.id) {
+                                    <div 
+                                        class="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 group/img cursor-pointer"
+                                        (click)="openViewer(selectedAlbumDetails()?.medias || [], $index)"
+                                    >
+                                         <img [src]="media.file_url" class="w-full h-full object-cover" />
+                                         <div class="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                             <div class="flex items-center justify-center w-full h-full">
+                                                 <i class="pi pi-search-plus text-white text-[12px]"></i>
+                                             </div>
+                                             <button 
+                                                 (click)="deletePhoto(media.id); $event.stopPropagation()"
+                                                 class="absolute top-1 right-1 p-1 bg-red-600/80 hover:bg-red-700 text-white rounded-md transition-colors shadow-sm"
+                                                 title="Supprimer"
+                                             >
+                                                 <i class="pi pi-trash text-[8px]"></i>
+                                             </button>
+                                         </div>
+                                     </div>
+                                } @empty {
+                                    <div class="text-[10px] text-gray-400 italic">Aucune photo dans cet album</div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            } @empty {
+                <div class="py-12 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                    <i class="pi pi-folder-open text-gray-300 text-4xl mb-3 block"></i>
+                    <p class="text-sm text-gray-500">Aucun album trouvé</p>
+                </div>
+            }
+        </div>
+        <input type="hidden" formControlName="selectedAlbumId" />
+    </div>
+    }
+
+    <!-- Photos sans album (Publications) -->
+    @if (orphanPhotos().length > 0) {
+    <div class="flex flex-col gap-4 p-6 bg-gradient-to-br from-amber-50/50 via-white to-orange-50/50 rounded-3xl border-2 border-dashed border-amber-200/60 shadow-sm animate-in fade-in slide-in-from-top-4 duration-700 my-2">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-amber-500 flex items-center justify-center text-white shadow-lg shadow-amber-200 animate-pulse-slow">
+                    <i class="pi pi-images text-lg"></i>
+                </div>
+                <div class="flex flex-col">
+                    <h3 class="text-sm font-bold text-amber-900 tracking-tight">Photos de publications à classer</h3>
+                    <p class="text-[11px] text-amber-700/70 font-medium italic">Ces images ne sont pas encore rangées dans un album</p>
+                </div>
+            </div>
+            <div class="px-3 py-1 bg-amber-100 rounded-full border border-amber-200">
+                <span class="text-[10px] font-bold text-amber-700 uppercase tracking-widest">
+                    {{ selectedOrphans().length }} sélectionnée(s)
+                </span>
+            </div>
+        </div>
+        
+        <div class="flex gap-4 overflow-x-auto pb-4 pt-1 custom-scrollbar px-1">
+            @for (photo of orphanPhotos(); track photo.id) {
+                <div 
+                    (click)="toggleOrphanSelection(photo.id)"
+                    class="relative w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 cursor-pointer border-2 transition-all duration-500 group/orph hover:shadow-xl hover:-translate-y-1"
+                    [class.border-amber-500]="selectedOrphans().includes(photo.id!)"
+                    [class.ring-4]="selectedOrphans().includes(photo.id!)"
+                    [class.ring-amber-500/20]="selectedOrphans().includes(photo.id!)"
+                    [class.scale-95]="selectedOrphans().includes(photo.id!)"
+                    [class.border-transparent]="!selectedOrphans().includes(photo.id!)"
+                >
+                    <img [src]="photo.file_url" class="w-full h-full object-cover transform transition-transform duration-700 group-hover/orph:scale-110" />
+                    
+                    <!-- Overlay de sélection -->
+                    <div 
+                        class="absolute inset-0 flex items-center justify-center bg-amber-500/40 backdrop-blur-[2px] transition-all duration-500"
+                        [class.opacity-100]="selectedOrphans().includes(photo.id!)"
+                        [class.opacity-0]="!selectedOrphans().includes(photo.id!)"
+                    >
+                        <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-amber-600 shadow-lg transform scale-100 animate-in zoom-in-50 duration-300">
+                            <i class="pi pi-check-circle text-xl"></i>
+                        </div>
+                    </div>
+
+                    <!-- Bouton Loupe -->
+                    <div 
+                        (click)="$event.stopPropagation(); openViewer(orphanPhotos(), $index)"
+                        class="absolute bottom-2 right-2 w-7 h-7 bg-black/60 backdrop-blur-md opacity-0 group-hover/orph:opacity-100 transition-all duration-300 text-white rounded-xl flex items-center justify-center hover:bg-amber-600 shadow-lg"
+                    >
+                        <i class="pi pi-search-plus text-xs"></i>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    }
+
+    <!-- Upload d'image -->
+    <div class="flex flex-col gap-2">
+        <label class="text-sm font-semibold text-gray-700">
+            Image à ajouter <span class="text-red-500">*</span>
+        </label>
+        
+        <file-uploader 
+            label="Choisir une image"
+            [multiple]="false"
+            accept="image/jpeg,image/png,image/webp"
+            (onSelect)="onSelectImage($event)"
+        ></file-uploader>
+        
+        @if (!imageFile() && photoForm.touched) {
+            <small class="text-red-500">Veuillez sélectionner une image</small>
+        }
+    </div>
+
+    <!-- Aperçu -->
+    @if (imageFile()) {
+        <div class="flex flex-col gap-2 p-4 bg-blue-50/50 rounded-2xl border border-blue-100 animate-in zoom-in-95 duration-300">
+            <div class="flex items-start gap-4">
+                <div 
+                    class="relative w-20 h-20 rounded-xl overflow-hidden shadow-sm border-2 border-white flex-shrink-0 cursor-zoom-in group/preview"
+                    (click)="openPreviewViewer()"
+                >
+                    <img 
+                        [src]="imageFile() | objectUrl" 
+                        alt="Aperçu"
+                        class="w-full h-full object-cover"
+                    />
+                    <div class="absolute inset-0 bg-black/20 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center">
+                        <i class="pi pi-search-plus text-white"></i>
+                    </div>
+                    <button 
+                        type="button"
+                        (click)="clearImage(); $event.stopPropagation()"
+                        class="absolute top-0 right-0 bg-red-500 text-white rounded-bl-xl w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors z-10"
+                    >
+                        <i class="pi pi-times text-[10px]"></i>
+                    </button>
+                </div>
+                
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold text-gray-800 truncate">{{ imageFile()?.name }}</div>
+                    <div class="text-xs text-gray-500 mt-0.5">
+                        {{ formatFileSize(imageFile()?.size || 0) }}
+                    </div>
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-blue-600 flex items-center gap-1 mt-2">
+                        <i class="pi pi-check-circle"></i>
+                        Prêt à envoyer
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Boutons d'action -->
+    <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
+        <button 
+            type="button"
+            (click)="resetForm()"
+            class="px-5 py-2.5 text-gray-500 font-bold hover:text-gray-700 transition-colors"
+            [disabled]="isSubmitting()"
+        >
+            Réinitialiser
+        </button>
+        
+        <button 
+            type="submit"
+            class="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-300 font-bold shadow-lg shadow-blue-200 flex items-center gap-2 disabled:opacity-50 disabled:shadow-none"
+            [disabled]="!canSubmit()"
+        >
+            @if (isSubmitting()) {
+                <i class="pi pi-spin pi-spinner"></i>
+                <span>Envoi...</span>
+            } @else {
+                <i class="pi pi-cloud-upload"></i>
+                <span>{{ isNewAlbum() ? 'Créer l\'album' : 'Ajouter à l\'album' }}</span>
+            }
+        </button>
+    </div>
+</form>
+
+<!-- Premium Photo Viewer Overlay -->
+@if (viewerVisible()) {
+  <div 
+    class="fixed inset-0 z-[99999] bg-black/95 backdrop-blur-md flex flex-col animate-in fade-in duration-300"
+    (click)="closeViewer()"
+  >
+    <!-- Close Button -->
+    <button 
+      (click)="closeViewer()" 
+      class="absolute top-6 right-6 z-[100001] p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all"
+    >
+      <i class="pi pi-times text-xl"></i>
+    </button>
+
+    <!-- Navigation Arrows -->
+    <button 
+      (click)="prevImage($event)" 
+      class="absolute left-6 top-1/2 -translate-y-1/2 z-[100001] p-5 bg-white/5 hover:bg-white/15 text-white rounded-full transition-all"
+      [disabled]="viewerImages().length <= 1"
+    >
+      <i class="pi pi-chevron-left text-2xl"></i>
+    </button>
+
+    <button 
+      (click)="nextImage($event)" 
+      class="absolute right-6 top-1/2 -translate-y-1/2 z-[100001] p-5 bg-white/5 hover:bg-white/15 text-white rounded-full transition-all"
+      [disabled]="viewerImages().length <= 1"
+    >
+      <i class="pi pi-chevron-right text-2xl"></i>
+    </button>
+
+    <!-- Main Image Container -->
+    <div class="flex-1 flex items-center justify-center p-4 sm:p-12 relative overflow-hidden">
+        @if (viewerImages().length > 0 && viewerImages()[currentIndex()]) {
+            <img 
+                [src]="viewerImages()[currentIndex()].file_url" 
+                class="max-w-full max-h-full object-contain shadow-2xl rounded-lg animate-in zoom-in-95 duration-500"
+                (click)="$event.stopPropagation()"
+            />
+        }
+    </div>
+
+    <!-- Bottom Info -->
+    <div class="p-8 text-center text-white/60 text-sm font-medium">
+      {{ currentIndex() + 1 }} / {{ viewerImages().length }}
+    </div>
+  </div>
+}

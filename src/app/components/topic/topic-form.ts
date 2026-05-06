@@ -44,7 +44,12 @@ export class TopicForm {
   private formBuilder = inject(FormBuilder);
   authProvider = inject(AuthProvider);
   topicService = inject(TopicService);
-  form = this.formBuilder.group<CreateTopic>(DEFAULT_TOPIC());
+  form = this.formBuilder.group({
+    id: [''],
+    title: [''],
+    description: [''],
+    authorId: [''],
+  });
   files = signal<File[] | null>(null);
   screen = inject(Screen);
   topicState = inject(HttpStateService);

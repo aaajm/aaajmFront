@@ -10,6 +10,9 @@ import {Routes} from '@angular/router';
 import {ChangePassword} from './pages/change-password';
 import {MemberPage} from './pages/member';
 import {UserPage} from './pages/user';
+import {PhotoForm} from '@/app/components/photo-gallery/photo-form';
+import { PhotoGallery } from './components/photo-gallery/photo-gallery';
+
 
 export const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -22,10 +25,8 @@ export const routes: Routes = [
       {path: 'authentication/verify-email', component: VerifyEmail},
       {path: 'change-password', component: ChangePassword},
       {path: 'partner', component: PartnerPage},
-      {
-        path: 'album',
-        loadComponent: () => import('./pages/photos').then((m) => m.PhotosPage),
-      },
+      {path: 'form',component: PhotoForm},
+      {path: 'album',component: PhotoGallery},
       {path: 'content/:topicId', component: TopicPage},
       {path: 'topic', component: TopicManage, canActivate: [AdminGuard]},
       {path: 'user', component: UserPage, canActivate: [AdminGuard]},
