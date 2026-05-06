@@ -1,4 +1,5 @@
 import {Layout} from '@/app/components/layout';
+import {PhotoForm} from '@/app/components/photo-gallery/photo-form';
 import {HomePage} from '@/app/pages/home';
 import {Login} from '@/app/pages/login';
 import {NotFound} from '@/app/pages/not-found';
@@ -7,12 +8,10 @@ import {TopicManage, TopicPage, TopicSummaryPage} from '@/app/pages/topic';
 import {VerifyEmail} from '@/app/pages/verify-email';
 import {AdminGuard} from '@/app/utils';
 import {Routes} from '@angular/router';
+import {PhotoGallery} from './components/photo-gallery/photo-gallery';
 import {ChangePassword} from './pages/change-password';
 import {MemberPage} from './pages/member';
 import {UserPage} from './pages/user';
-import {PhotoForm} from '@/app/components/photo-gallery/photo-form';
-import { PhotoGallery } from './components/photo-gallery/photo-gallery';
-
 
 export const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -25,8 +24,8 @@ export const routes: Routes = [
       {path: 'authentication/verify-email', component: VerifyEmail},
       {path: 'change-password', component: ChangePassword},
       {path: 'partner', component: PartnerPage},
-      {path: 'form',component: PhotoForm},
-      {path: 'album',component: PhotoGallery},
+      {path: 'form', component: PhotoForm},
+      {path: 'album', component: PhotoGallery},
       {path: 'content/:topicId', component: TopicPage},
       {path: 'topic', component: TopicManage, canActivate: [AdminGuard]},
       {path: 'user', component: UserPage, canActivate: [AdminGuard]},

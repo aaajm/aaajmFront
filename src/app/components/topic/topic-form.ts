@@ -7,7 +7,7 @@ import {
   Screen,
   ToastService,
 } from '@/app/utils';
-import {CreateTopic, Topic, TopicService} from '@aaajm/client';
+import {Topic, TopicService} from '@aaajm/client';
 import {createTopicSchema} from '@aaajm/client/zod';
 import {
   Component,
@@ -44,12 +44,7 @@ export class TopicForm {
   private formBuilder = inject(FormBuilder);
   authProvider = inject(AuthProvider);
   topicService = inject(TopicService);
-  form = this.formBuilder.group({
-    id: [''],
-    title: [''],
-    description: [''],
-    authorId: [''],
-  });
+  form = this.formBuilder.group(DEFAULT_TOPIC());
   files = signal<File[] | null>(null);
   screen = inject(Screen);
   topicState = inject(HttpStateService);

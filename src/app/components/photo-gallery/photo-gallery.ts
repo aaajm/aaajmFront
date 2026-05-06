@@ -1,7 +1,14 @@
-import { Album, AlbumSummary, FileInfo, FileService } from '@aaajm/client';
-import { Component, computed, HostListener, inject, resource, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { firstValueFrom } from 'rxjs';
+import {Album, AlbumSummary, FileInfo, FileService} from '@aaajm/client';
+import {CommonModule} from '@angular/common';
+import {
+  Component,
+  computed,
+  HostListener,
+  inject,
+  resource,
+  signal,
+} from '@angular/core';
+import {firstValueFrom} from 'rxjs';
 
 @Component({
   selector: 'app-photo-gallery',
@@ -29,8 +36,8 @@ export class PhotoGallery {
   selectedAlbum = signal<AlbumSummary | null>(null);
 
   albumDetailsResource = resource({
-    params: () => ({ id: this.selectedAlbum()?.id }),
-    loader: ({ params }): Promise<Album | null> => {
+    params: () => ({id: this.selectedAlbum()?.id}),
+    loader: ({params}): Promise<Album | null> => {
       if (!params.id) return Promise.resolve(null);
       return firstValueFrom(this.fileService.getOneAlbum(params.id));
     },
@@ -51,7 +58,9 @@ export class PhotoGallery {
 
   files = computed(() => {
     if (this.allAlbumsResource.hasValue()) {
-      return this.allAlbumsResource.value().flatMap(album => album.medias || []);
+      return this.allAlbumsResource
+        .value()
+        .flatMap((album) => album.medias || []);
     }
     return [];
   });
@@ -59,8 +68,8 @@ export class PhotoGallery {
   activeTab = 'vos-photos';
 
   tabs = [
-    { id: 'vos-photos', label: 'Photos' },
-    { id: 'albums', label: 'Albums' },
+    {id: 'vos-photos', label: 'Photos'},
+    {id: 'albums', label: 'Albums'},
   ];
 
   setActiveTab(tabId: string) {
@@ -104,14 +113,16 @@ export class PhotoGallery {
   prevImage(event?: Event) {
     if (event) event.stopPropagation();
     if (this.viewerImages().length === 0) return;
-    const prev = (this.currentIndex() - 1 + this.viewerImages().length) % this.viewerImages().length;
+    const prev =
+      (this.currentIndex() - 1 + this.viewerImages().length) %
+      this.viewerImages().length;
     this.currentIndex.set(prev);
   }
 
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
     if (!this.viewerVisible()) return;
-    
+
     if (event.key === 'Escape') this.closeViewer();
     if (event.key === 'ArrowRight') this.nextImage();
     if (event.key === 'ArrowLeft') this.prevImage();

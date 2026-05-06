@@ -1,5 +1,13 @@
 // utils/default-value.ts
-import {CreateTopic, Partner, Album, CreateAlbum, Role, Sex, Status, User} from '@aaajm/client';
+import {
+  CreateAlbum,
+  CreateTopic,
+  Partner,
+  Role,
+  Sex,
+  Status,
+  User,
+} from '@aaajm/client';
 import {safeAddUuid} from './uuid';
 
 export const DEFAULT_PARTNER = () =>
@@ -22,10 +30,10 @@ export const DEFAULT_TOPIC = () =>
     authorId: '',
   }) as CreateTopic;
 
-export const DEFAULT_ALBUM = () =>
+export const DEFAULT_ALBUM = (authorId?: string) =>
   safeAddUuid({
-    title: '',      // 'title' pas 'titre'
-    authorId: '',   // authorId requis
+    title: '',
+    authorId: authorId || '',
   }) as CreateAlbum;
 
 export const DEFAULT_USER = () =>
@@ -43,6 +51,3 @@ export const DEFAULT_USER = () =>
     role: Role.None,
     profile: '',
   }) as User;
-
-// ⚠️ IMPORTANT: SUPPRIMER cette fonction si elle existe
-// export const newId = (): string => { ... }
