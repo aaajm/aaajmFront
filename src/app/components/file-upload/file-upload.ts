@@ -21,6 +21,9 @@ export class Fileupload {
   @Output() onSelect = new EventEmitter<File[]>();
   @Input({required: true}) label?: string;
   @Input() multiple: boolean = false;
+  @Input() accept: string = 'image/*, .jpg, .jpeg, .png, .webp, .gif, .bmp, .tif, .tiff, .jfif, .svg';
+  @Input() maxFileSize: number = 20000000; // 20MB default to avoid frontend blocking
+  @Input() showPreview: boolean = true;
 
   onSelectedFiles(event: FileSelectEvent) {
     this.onSelect.emit(event.currentFiles);

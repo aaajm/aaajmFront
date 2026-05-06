@@ -68,7 +68,7 @@ export class PhotoForm implements OnInit {
 
   selectedAlbumDetails = computed(() => this.selectedAlbumDetailsResource.value());
 
-  imageFile = signal<File | null>(null);
+  imageFiles = signal<File[]>([]);
   zodErrors = signal<Record<string, string | null>>({});
   isSubmitting = signal(false);
   isNewAlbum = signal(true);
@@ -99,7 +99,7 @@ export class PhotoForm implements OnInit {
     const isNew = this.isNewAlbum();
     const titleValid = isNew ? (this.photoForm.get('title')?.valid ?? false) : true;
     const albumSelected = isNew ? true : !!this.photoForm.get('selectedAlbumId')?.value;
-    const hasImage = this.imageFile() !== null;
+    const hasImage = this.imageFiles().length > 0;
     const hasOrphans = this.selectedOrphans().length > 0;
     const notSubmitting = !this.isSubmitting();
 
@@ -236,17 +236,27 @@ export class PhotoForm implements OnInit {
 
   onSelectImage(files: File[]) {
     if (files && files.length > 0) {
-      const file = files[0];
-      if (!file.type.startsWith('image/')) {
-        this.toast.message('error', 'Veuillez sélectionner une image valide');
-        return;
+      const validFiles = files.filter(file => {
+        const isImage = file.type.startsWith('image/') || 
+                        /\.(jpg|jpeg|png|webp|gif|bmp|tif|tiff|jfif|svg)$/i.test(file.name);
+        return isImage;
+      });
+
+      if (validFiles.length < files.length) {
+        this.toast.message('warn', `${files.length - validFiles.length} fichier(s) ignoré(s) (format invalide)`);
       }
-      this.imageFile.set(file);
+
+      this.imageFiles.set(validFiles);
     }
   }
 
+  removeImage(index: number) {
+    const current = this.imageFiles();
+    this.imageFiles.set(current.filter((_, i) => i !== index));
+  }
+
   clearImage() {
-    this.imageFile.set(null);
+    this.imageFiles.set([]);
   }
 
   resetForm() {
@@ -257,7 +267,7 @@ export class PhotoForm implements OnInit {
       authorId: this.currentAuthorId()
     });
     this.isNewAlbum.set(true);
-    this.imageFile.set(null);
+    this.imageFiles.set([]);
     this.zodErrors.set({});
   }
 
@@ -278,9 +288,9 @@ export class PhotoForm implements OnInit {
     try {
       const albumId = albumData.id!;
       
-      // 1. Ajouter la nouvelle image si présente
-      if (this.imageFile()) {
-        await firstValueFrom(this.fileService.addMediaToAlbum(albumData, [this.imageFile()!]));
+      // 1. Ajouter les nouvelles images si présentes
+      if (this.imageFiles().length > 0) {
+        await firstValueFrom(this.fileService.addMediaToAlbum(albumData, this.imageFiles()));
       } else if (isNew) {
         // Si c'est un nouvel album sans nouvelle image, on doit quand même le créer
         // On peut appeler l'API de création d'album vide (à voir si elle existe)
@@ -361,10 +371,15 @@ export class PhotoForm implements OnInit {
     }
   }
 
-  openPreviewViewer() {
-    const file = this.imageFile();
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    this.openViewer([{ file_url: url, id: 'preview' } as any], 0);
+  openPreviewViewer(index: number) {
+    const files = this.imageFiles();
+    if (files.length === 0) return;
+    
+    const previewMedias = files.map((file, i) => ({
+      file_url: URL.createObjectURL(file),
+      id: `preview-${i}`
+    }));
+    
+    this.openViewer(previewMedias as any, index);
   }
 }

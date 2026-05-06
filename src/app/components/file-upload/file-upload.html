@@ -2,8 +2,8 @@
   <p-toast />
   <p-fileupload
     [multiple]="multiple"
-    accept="image/*"
-    maxFileSize="5000000"
+    [accept]="accept"
+    [maxFileSize]="maxFileSize"
     (onSelect)="onSelectedFiles($event)"
   >
     <ng-template
@@ -28,7 +28,7 @@
         <b class="mt-6 mb-0">{{label}}</b>
       </div>
       <div class="flex flex-col gap-8 pt-4">
-        @if (files?.length > 0) {
+        @if (showPreview && files?.length > 0) {
         <div>
           <div class="flex flex-wrap gap-4">
             @for (file of files; track $index) {

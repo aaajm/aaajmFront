@@ -255,52 +255,53 @@
         </label>
         
         <file-uploader 
-            label="Choisir une image"
-            [multiple]="false"
-            accept="image/jpeg,image/png,image/webp"
+            label="Choisir des images"
+            [multiple]="true"
+            [showPreview]="false"
             (onSelect)="onSelectImage($event)"
         ></file-uploader>
         
-        @if (!imageFile() && photoForm.touched) {
-            <small class="text-red-500">Veuillez sélectionner une image</small>
+        @if (imageFiles().length === 0 && photoForm.touched) {
+            <p class="text-[10px] text-red-500 mt-1 animate-in slide-in-from-top-1">Veuillez sélectionner au moins une image</p>
         }
     </div>
 
     <!-- Aperçu -->
-    @if (imageFile()) {
-        <div class="flex flex-col gap-2 p-4 bg-blue-50/50 rounded-2xl border border-blue-100 animate-in zoom-in-95 duration-300">
-            <div class="flex items-start gap-4">
-                <div 
-                    class="relative w-20 h-20 rounded-xl overflow-hidden shadow-sm border-2 border-white flex-shrink-0 cursor-zoom-in group/preview"
-                    (click)="openPreviewViewer()"
-                >
-                    <img 
-                        [src]="imageFile() | objectUrl" 
-                        alt="Aperçu"
-                        class="w-full h-full object-cover"
-                    />
-                    <div class="absolute inset-0 bg-black/20 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center">
-                        <i class="pi pi-search-plus text-white"></i>
+    @if (imageFiles().length > 0) {
+        <div class="flex flex-col gap-4 p-4 bg-blue-50/50 rounded-2xl border border-blue-100 animate-in zoom-in-95 duration-300">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-blue-600 flex items-center gap-1">
+                <i class="pi pi-images"></i>
+                {{ imageFiles().length }} image(s) prête(s) à être ajoutée(s)
+            </div>
+            
+            <div class="flex gap-4 overflow-x-auto pb-2 custom-scrollbar">
+                @for (file of imageFiles(); track $index) {
+                    <div class="flex flex-col gap-2 items-center min-w-[80px]">
+                        <div 
+                            class="relative w-20 h-20 rounded-xl overflow-hidden shadow-sm border-2 border-white flex-shrink-0 cursor-zoom-in group/preview"
+                            (click)="openPreviewViewer($index)"
+                        >
+                            <img 
+                                [src]="file | objectUrl" 
+                                alt="Aperçu"
+                                class="w-full h-full object-cover"
+                            />
+                            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center">
+                                <i class="pi pi-search-plus text-white"></i>
+                            </div>
+                            <button 
+                                type="button"
+                                (click)="removeImage($index); $event.stopPropagation()"
+                                class="absolute top-0 right-0 bg-red-500 text-white rounded-bl-xl w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors z-10"
+                            >
+                                <i class="pi pi-times text-[10px]"></i>
+                            </button>
+                        </div>
+                        <div class="text-[9px] text-gray-500 truncate w-20 text-center">
+                            {{ file.name }}
+                        </div>
                     </div>
-                    <button 
-                        type="button"
-                        (click)="clearImage(); $event.stopPropagation()"
-                        class="absolute top-0 right-0 bg-red-500 text-white rounded-bl-xl w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors z-10"
-                    >
-                        <i class="pi pi-times text-[10px]"></i>
-                    </button>
-                </div>
-                
-                <div class="flex-1 min-w-0">
-                    <div class="text-sm font-bold text-gray-800 truncate">{{ imageFile()?.name }}</div>
-                    <div class="text-xs text-gray-500 mt-0.5">
-                        {{ formatFileSize(imageFile()?.size || 0) }}
-                    </div>
-                    <div class="text-[10px] font-bold uppercase tracking-wider text-blue-600 flex items-center gap-1 mt-2">
-                        <i class="pi pi-check-circle"></i>
-                        Prêt à envoyer
-                    </div>
-                </div>
+                }
             </div>
         </div>
     }
