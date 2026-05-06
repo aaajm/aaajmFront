@@ -1,0 +1,280 @@
+<form [formGroup]="photoForm" (ngSubmit)="submit()" class="flex flex-col gap-6">
+  <p-tabs lazy value="new" class="flex flex-col w-full">
+    <p-tablist class="w-full flex border-2">
+      @for (menu of tabMenu; track menu.value) {
+      <p-tab
+        [value]="menu.value"
+        (click)="selectedTab.set(menu.value)"
+        [class]="'!flex-1 flex items-center justify-center !gap-2rounded-lg '+(menu.value === selectedTab() ? 'bg-gray-600 text-white' : 'text-black')"
+      >
+        <i [class]="menu.icon"></i>
+        <span>{{ menu.label }}</span>
+      </p-tab>
+      }
+    </p-tablist>
+
+    <p-tabpanels class="flex-1">
+      <p-tabpanel value="new" class="h-full">
+        <div class="flex flex-col gap-2">
+          <label for="title" class="text-sm font-semibold text-gray-700">
+            Titre du nouvel album <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input
+              id="title"
+              type="text"
+              pInputText
+              formControlName="title"
+              placeholder="Ex: Action Sociale 2024"
+              class="w-full p-2 bg-slate-100 border-none rounded-lg outline-none"
+            />
+          </div>
+          @if (photoForm.get('title')?.invalid &&
+          photoForm.get('title')?.touched) {
+          <small class="text-red-500 flex items-center gap-1">
+            <i class="pi pi-exclamation-circle"></i> Le titre est obligatoire
+          </small>
+          }
+        </div>
+      </p-tabpanel>
+
+      <p-tabpanel value="existing" class="h-full">
+        <div
+          class="flex flex-col gap-3 animate-in fade-in slide-in-from-top-2 duration-300"
+        >
+          @if(orphansResource.isLoading() || albumsResource.isLoading()){
+          <app-skeleton></app-skeleton>
+          }
+          <label
+            class="text-sm font-semibold text-gray-700 flex justify-between items-center"
+          >
+            <span>Choisir un album <span class="text-red-500">*</span></span>
+            <span class="text-[10px] text-gray-400 font-normal"
+              >{{ albums().length }} albums disponibles</span
+            >
+          </label>
+
+          <div
+            class="grid grid-cols-1 gap-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"
+          >
+            @for (album of albums(); track album.id) {
+            <div
+              (click)="selectAlbum(album.id)"
+              class="group relative flex flex-col gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300"
+              [class.border-blue-500]="selectedAlbumId() === album.id"
+              [class.bg-blue-50/50]="selectedAlbumId() === album.id"
+              [class.border-gray-100]="selectedAlbumId() !== album.id"
+              [class.hover:border-blue-200]="selectedAlbumId() !== album.id"
+            >
+              <!-- Checkmark pour l'album sélectionné -->
+              @if (selectedAlbumId() === album.id) {
+              <div
+                class="absolute -top-2 -right-2 bg-blue-500 text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg animate-in zoom-in duration-300 z-10"
+              >
+                <i class="pi pi-check text-xs font-bold"></i>
+              </div>
+              }
+
+              <div class="flex gap-4 items-center">
+                <!-- Mini couverture plus grande -->
+                <div
+                  class="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 shadow-md relative group/cover"
+                >
+                  @if (album.imageCoverage) {
+                  <p-image
+                    [src]="album.imageCoverage"
+                    imageClass="w-full h-full object-cover"
+                    alt="Image"
+                    [preview]="true"
+                  />
+                  } @else {
+                  <div
+                    class="w-full h-full flex items-center justify-center bg-slate-100"
+                  >
+                    <i class="pi pi-images text-gray-300 text-xl"></i>
+                  </div>
+                  }
+                </div>
+
+                <div class="flex-1 min-w-0">
+                  @if (editingAlbumId() === album.id) {
+                  <div class="flex flex-col gap-2">
+                    <input
+                      type="text"
+                      [(ngModel)]="editingTitle"
+                      [ngModelOptions]="{standalone: true}"
+                      class="w-full text-sm p-2 border-2 border-blue-500 rounded-xl outline-none"
+                      autofocus
+                    />
+                    <div class="flex gap-3">
+                      <button
+                        type="button"
+                        (click)="saveAlbumTitle(album)"
+                        class="px-3 py-1 bg-green-600 text-white text-[10px] font-bold rounded-lg shadow-sm hover:bg-green-700 transition-colors"
+                      >
+                        <i class="pi pi-check mr-1"></i>Enregistrer
+                      </button>
+                      <button
+                        (click)="cancelEdit()"
+                        type="button"
+                        class="px-3 py-1 bg-gray-200 text-gray-600 text-[10px] font-bold rounded-lg hover:bg-gray-300 transition-colors"
+                      >
+                        Annuler
+                      </button>
+                    </div>
+                  </div>
+                  } @else {
+                  <div class="flex justify-between items-start">
+                    <div
+                      class="text-sm font-bold text-gray-900 truncate flex-1"
+                    >
+                      {{ album.title }}
+                    </div>
+                    <div
+                      class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        type="button"
+                        (click)="startEditAlbum(album)"
+                        class="p-2 bg-blue-50 hover:bg-blue-100 rounded-xl text-blue-600 shadow-sm"
+                        title="Modifier le titre"
+                      >
+                        <i class="pi pi-pencil text-xs"></i>
+                      </button>
+                      <button
+                        type="button"
+                        (click)="confirmDeleteAlbum($event,album.id)"
+                        class="p-2 bg-red-50 hover:bg-red-100 rounded-xl text-red-600 shadow-sm"
+                        title="Supprimer l'album"
+                      >
+                        <i class="pi pi-trash text-xs"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    class="text-xs text-gray-500 mt-1 flex items-center gap-2"
+                  >
+                    <span class="flex items-center gap-1">
+                      <i class="pi pi-image text-[10px]"></i>
+                      {{ $any(album).mediaCount || 0 }} photos
+                    </span>
+                    <span class="text-gray-300">•</span>
+                    <span class="flex items-center gap-1">
+                      <i class="pi pi-calendar text-[10px]"></i>
+                      {{ album.createdAt | date:'dd/MM/yyyy' }}
+                    </span>
+                  </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Liste des photos si sélectionné (pour suppression individuelle) -->
+              @if (selectedAlbumId() === album.id && selectedAlbumDetails()) {
+              <div
+                class="mt-4 pt-4 border-t border-blue-100 animate-in fade-in slide-in-from-top-2 duration-500"
+              >
+                <div
+                  class="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-2"
+                >
+                  Gérer les photos existantes
+                </div>
+                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                  @for (media of selectedAlbumDetails()?.medias; track media.id)
+                  {
+                  <div
+                    class="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer"
+                  >
+                    <p-image
+                      [src]="media.file_url"
+                      imageClass="w-full h-full object-cover"
+                      alt="Image"
+                      appendTo="body"
+                      [preview]="true"
+                    >
+                      <ng-template pTemplate="indicator">
+                        <div
+                          class="absolute inset-0 bg-black/20 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center"
+                        >
+                          <i class="pi pi-search-plus text-white"></i>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="confirmDeleteFile($event, media.id)"
+                          title="Supprimer"
+                          class="absolute top-0 right-0 bg-red-500 text-white rounded-bl-xl w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors z-10"
+                        >
+                          <i class="pi pi-times text-[10px]"></i>
+                        </button>
+                      </ng-template>
+                    </p-image>
+                  </div>
+                  } @empty {
+                  <div class="text-[10px] text-gray-400 italic">
+                    Aucune photo dans cet album
+                  </div>
+                  }
+                </div>
+              </div>
+              }
+            </div>
+            } @empty {
+            <div
+              class="py-12 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200"
+            >
+              <i
+                class="pi pi-folder-open text-gray-300 text-4xl mb-3 block"
+              ></i>
+              <p class="text-sm text-gray-500">Aucun album trouvé</p>
+            </div>
+            }
+          </div>
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+
+    <!-- Upload d'image -->
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-semibold text-gray-700">
+        Image à ajouter <span class="text-red-500">*</span>
+      </label>
+
+      <file-uploader
+        #pFileUpload
+        label="Choisir des images"
+        [multiple]="true"
+        [showPreview]="true"
+        (onSelect)="onSelectImage($event)"
+      ></file-uploader>
+
+      @if (imageFiles().length === 0 && photoForm.touched) {
+      <p class="text-[10px] text-red-500 mt-1 animate-in slide-in-from-top-1">
+        Veuillez sélectionner au moins une image
+      </p>
+      }
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
+      <button
+        type="button"
+        (click)="resetForm()"
+        class="px-5 py-2.5 text-gray-500 font-bold hover:text-gray-700 transition-colors"
+        [disabled]="submitPhotoState.isLoading()"
+      >
+        Réinitialiser
+      </button>
+
+      <button
+        pButton
+        [loading]="submitPhotoState.isLoading()"
+        [label]="selectedTab() == 'new' ? 'Créer l\'album' : 'Ajouter à l\'album'"
+        type="submit"
+        icon="pi pi-cloud-upload"
+        class="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-300 font-bold shadow-lg shadow-blue-200 flex items-center gap-2 disabled:opacity-50 disabled:shadow-none"
+        [disabled]="!canSubmit()"
+      ></button>
+    </div>
+  </p-tabs>
+</form>
+
+<p-confirmdialog />

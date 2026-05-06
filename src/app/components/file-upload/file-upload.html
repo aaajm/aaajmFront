@@ -1,9 +1,10 @@
 <div class="card">
   <p-toast />
   <p-fileupload
+    #pUpload
     [multiple]="multiple"
-    accept="image/*"
-    maxFileSize="5000000"
+    [accept]="accept"
+    [maxFileSize]="maxFileSize"
     (onSelect)="onSelectedFiles($event)"
   >
     <ng-template
@@ -28,35 +29,59 @@
         <b class="mt-6 mb-0">{{label}}</b>
       </div>
       <div class="flex flex-col gap-8 pt-4">
-        @if (files?.length > 0) {
+        @if (showPreview && files?.length > 0) {
         <div>
           <div class="flex flex-wrap gap-4">
-            @for (file of files; track $index) {
             <div
-              class="card m-0 px-12 flex flex-col border border-surface items-center gap-4"
+              class="flex flex-col -full gap-4 p-4 bg-blue-50/50 rounded-2xl border border-blue-100 animate-in zoom-in-95 duration-300"
             >
-              <div>
-                <img
-                  role="presentation"
-                  [alt]="file.name"
-                  [src]="file.objectURL"
-                  width="100"
-                  height="50"
-                />
-              </div>
-              <span
-                class="font-semibold text-ellipsis max-w-60 whitespace-nowrap overflow-hidden"
-                >{{ file.name }}</span
+              <div
+                class="text-[10px] font-bold uppercase tracking-wider text-blue-600 flex items-center gap-1"
               >
-              <p-button
-                icon="pi pi-times"
-                (onClick)="onRemoveTemplatingFile($event, files, removeFileCallback, $index)"
-                [outlined]="true"
-                [rounded]="true"
-                severity="danger"
-              />
+                <i class="pi pi-images"></i>
+                {{ files.length }} image(s) prête(s) à être ajoutée(s)
+              </div>
+
+              <div
+                class="flex gap-4 w-full overflow-x-auto pb-2 custom-scrollbar"
+              >
+                @for (file of files; track $index) {
+                <div class="flex flex-col gap-2 items-center min-w-[80px]">
+                  <div
+                    class="relative w-20 h-20 rounded-xl overflow-hidden shadow-sm border-2 border-white flex-shrink-0 cursor-zoom-in group/preview"
+                  >
+                    <p-image
+                      [src]="file.objectURL || ''"
+                      imageClass="w-full h-full object-cover"
+                      alt="Image"
+                      appendTo="body"
+                      [preview]="true"
+                    >
+                      <ng-template pTemplate="indicator" class="w-full">
+                        <div
+                          class="absolute inset-0 bg-black/20 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center"
+                        >
+                          <i class="pi pi-search-plus text-white"></i>
+                        </div>
+                        <p-button
+                          type="button"
+                          (onClick)="onRemoveTemplatingFile($event, files, removeFileCallback, $index)"
+                          class="absolute top-0 right-0 bg-red-500 text-white rounded-bl-xl w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors z-10"
+                        >
+                          <i class="pi pi-times text-[10px]"></i>
+                        </p-button>
+                      </ng-template>
+                    </p-image>
+                  </div>
+                  <div
+                    class="text-[9px] text-gray-500 truncate w-20 text-center"
+                  >
+                    {{ file.name }}
+                  </div>
+                </div>
+                }
+              </div>
             </div>
-            }
           </div>
         </div>
         }
