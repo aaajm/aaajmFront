@@ -13,6 +13,7 @@ import {HttpClient} from '@angular/common/http';
 import {
   Component,
   computed,
+  HostListener,
   inject,
   OnInit,
   resource,
@@ -27,7 +28,7 @@ import {Image, ImageModule} from 'primeng/image';
 import {InputGroupModule} from 'primeng/inputgroup';
 import {InputTextModule} from 'primeng/inputtext';
 import {TabsModule} from 'primeng/tabs';
-import {firstValueFrom} from 'rxjs';
+import {firstValueFrom, from} from 'rxjs';
 import {Fileupload} from '../file-upload';
 import {Skeleton} from '../skeleton';
 
@@ -279,7 +280,14 @@ export class PhotoForm implements OnInit {
         );
       }
 
-      this.imageFiles.set(validFiles.map((file) => new File([file], newId())));
+      // Pour une gestion professionnelle, on préserve l'extension d'origine
+      const transformedFiles = validFiles.map((file) => {
+        const extension = file.name.split('.').pop() || 'jpg';
+        const newName = `${newId()}.${extension}`;
+        return new File([file], newName, {type: file.type});
+      });
+
+      this.imageFiles.set(transformedFiles);
     }
   }
 
@@ -290,15 +298,123 @@ export class PhotoForm implements OnInit {
   }
 
   async submit() {
-    const toUpload = Object.assign({
-      ...this.photoForm.value,
-      authorId: this.authProvider.currentUser()?.id,
-    });
+    const isNew = this.selectedTab() === 'new';
+    const formValue = this.photoForm.value;
+
+    const albumData: CreateAlbum = {
+      id: (formValue as any).id || newId(),
+      title: formValue.title || '',
+      authorId: this.authProvider.currentUser()?.id || '',
+    };
+
+    // Si on ajoute à un album existant, on utilise l'ID sélectionné
+    if (!isNew && this.selectedAlbumId()) {
+      albumData.id = this.selectedAlbumId()!;
+    }
+
     await this.submitPhotoState.request({
-      request: this.fileService.addMediaToAlbum(toUpload, this.imageFiles()),
+      request: from(
+        (async () => {
+          // 1. Upload des nouvelles images
+          let resultAlbum: Album | null = null;
+          if (this.imageFiles().length > 0) {
+            resultAlbum = await firstValueFrom(
+              this.fileService.addMediaToAlbum(albumData, this.imageFiles())
+            );
+          }
+
+          // 2. Déplacement des photos orphelines sélectionnées
+          const orphansToMove = this.selectedOrphans();
+          const finalAlbumId = resultAlbum?.id || albumData.id;
+
+          if (orphansToMove.length > 0 && finalAlbumId) {
+            await firstValueFrom(
+              this.fileService.moveMediasAlbum(finalAlbumId, {
+                imageIds: orphansToMove,
+              })
+            );
+          }
+
+          return resultAlbum;
+        })()
+      ),
       onSuccess: () => {
-        this.toast.message('success', 'Succès', 'Album bien enregistrer.');
+        this.toast.message('success', 'Succès', 'Album bien mis à jour.');
+        this.resetForm();
+        this.albumsResource.reload();
+        this.orphansResource.reload();
+        this.selectedAlbumId.set(null);
+        this.selectedOrphans.set([]);
       },
     });
+  }
+
+  // Viewer state
+  viewerVisible = signal(false);
+  viewerImages = signal<FileInfo[]>([]);
+  currentIndex = signal(0);
+  rotation = signal(0);
+  zoom = signal(1);
+
+  openViewer(images: FileInfo[], startAt: number = 0) {
+    this.viewerImages.set(images);
+    this.currentIndex.set(startAt);
+    this.resetTransform();
+    this.viewerVisible.set(true);
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeViewer() {
+    this.viewerVisible.set(false);
+    document.body.style.overflow = 'auto';
+    this.resetTransform();
+  }
+
+  nextImage(event?: Event) {
+    if (event) event.stopPropagation();
+    if (this.viewerImages().length === 0) return;
+    const next = (this.currentIndex() + 1) % this.viewerImages().length;
+    this.currentIndex.set(next);
+    this.resetTransform();
+  }
+
+  prevImage(event?: Event) {
+    if (event) event.stopPropagation();
+    if (this.viewerImages().length === 0) return;
+    const prev =
+      (this.currentIndex() - 1 + this.viewerImages().length) %
+      this.viewerImages().length;
+    this.currentIndex.set(prev);
+    this.resetTransform();
+  }
+
+  rotateLeft() {
+    this.rotation.update((r) => r - 90);
+  }
+
+  rotateRight() {
+    this.rotation.update((r) => r + 90);
+  }
+
+  zoomIn() {
+    this.zoom.update((z) => Math.min(z + 0.2, 3));
+  }
+
+  zoomOut() {
+    this.zoom.update((z) => Math.max(z - 0.2, 0.5));
+  }
+
+  resetTransform() {
+    this.rotation.set(0);
+    this.zoom.set(1);
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (!this.viewerVisible()) return;
+
+    if (event.key === 'Escape') this.closeViewer();
+    if (event.key === 'ArrowRight') this.nextImage();
+    if (event.key === 'ArrowLeft') this.prevImage();
   }
 }

@@ -26,7 +26,7 @@ export const routes: Routes = [
       {path: 'authentication/verify-email', component: VerifyEmail},
       {path: 'change-password', component: ChangePassword},
       {path: 'partner', component: PartnerPage},
-      {path: 'photo-form', component: PhotoForm, canActivate: [AdminGuard]},
+      {path: 'photo-form', component: PhotoForm , canActivate: [AdminGuard]},
       {path: 'album', component: PhotoGallery},
       {path: 'content/:topicId', component: TopicPage},
       {path: 'topic', component: TopicManage, canActivate: [AdminGuard]},

@@ -88,10 +88,13 @@ export class PhotoGallery {
   viewerVisible = signal(false);
   viewerImages = signal<FileInfo[]>([]);
   currentIndex = signal(0);
+  rotation = signal(0);
+  zoom = signal(1);
 
   openViewer(images: FileInfo[], startAt: number = 0) {
     this.viewerImages.set(images);
     this.currentIndex.set(startAt);
+    this.resetTransform();
     this.viewerVisible.set(true);
     // Empêcher le scroll du body
     document.body.style.overflow = 'hidden';
@@ -100,6 +103,7 @@ export class PhotoGallery {
   closeViewer() {
     this.viewerVisible.set(false);
     document.body.style.overflow = 'auto';
+    this.resetTransform();
   }
 
   nextImage(event?: Event) {
@@ -107,6 +111,7 @@ export class PhotoGallery {
     if (this.viewerImages().length === 0) return;
     const next = (this.currentIndex() + 1) % this.viewerImages().length;
     this.currentIndex.set(next);
+    this.resetTransform();
   }
 
   prevImage(event?: Event) {
@@ -116,6 +121,28 @@ export class PhotoGallery {
       (this.currentIndex() - 1 + this.viewerImages().length) %
       this.viewerImages().length;
     this.currentIndex.set(prev);
+    this.resetTransform();
+  }
+
+  rotateLeft() {
+    this.rotation.update((r) => r - 90);
+  }
+
+  rotateRight() {
+    this.rotation.update((r) => r + 90);
+  }
+
+  zoomIn() {
+    this.zoom.update((z) => Math.min(z + 0.2, 3));
+  }
+
+  zoomOut() {
+    this.zoom.update((z) => Math.max(z - 0.2, 0.5));
+  }
+
+  resetTransform() {
+    this.rotation.set(0);
+    this.zoom.set(1);
   }
 
   @HostListener('window:keydown', ['$event'])

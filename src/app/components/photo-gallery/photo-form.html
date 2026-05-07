@@ -189,7 +189,7 @@
                       imageClass="w-full h-full object-cover"
                       alt="Image"
                       appendTo="body"
-                      [preview]="true"
+                      (click)="openViewer(selectedAlbumDetails()?.medias || [], $index)"
                     >
                       <ng-template pTemplate="indicator">
                         <div
@@ -278,3 +278,96 @@
 </form>
 
 <p-confirmdialog />
+
+<!-- Premium Photo Viewer Overlay -->
+@if (viewerVisible()) {
+<div
+  class="fixed inset-0 z-[100000] flex items-center justify-center bg-black/95 backdrop-blur-sm animate-in fade-in duration-300"
+>
+  <!-- Fermer -->
+  <button
+    (click)="closeViewer()"
+    class="absolute top-6 right-6 z-[100002] p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all hover:rotate-90"
+  >
+    <i class="pi pi-times text-xl"></i>
+  </button>
+
+  <!-- Barre de contrôles (Zoom / Rotation) -->
+  <div
+    class="absolute top-6 left-1/2 -translate-x-1/2 z-[100002] flex gap-4 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10"
+  >
+    <button
+      (click)="zoomIn()"
+      class="p-2 hover:bg-white/10 text-white rounded-xl transition-colors"
+      title="Zoomer"
+    >
+      <i class="pi pi-search-plus text-lg"></i>
+    </button>
+    <button
+      (click)="zoomOut()"
+      class="p-2 hover:bg-white/10 text-white rounded-xl transition-colors"
+      title="Dézoomer"
+    >
+      <i class="pi pi-search-minus text-lg"></i>
+    </button>
+    <div class="w-px h-6 bg-white/20 my-auto"></div>
+    <button
+      (click)="rotateLeft()"
+      class="p-2 hover:bg-white/10 text-white rounded-xl transition-colors"
+      title="Tourner à gauche"
+    >
+      <i class="pi pi-refresh text-lg -scale-x-100"></i>
+    </button>
+    <button
+      (click)="rotateRight()"
+      class="p-2 hover:bg-white/10 text-white rounded-xl transition-colors"
+      title="Tourner à droite"
+    >
+      <i class="pi pi-refresh text-lg"></i>
+    </button>
+    <div class="w-px h-6 bg-white/20 my-auto"></div>
+    <button
+      (click)="resetTransform()"
+      class="p-2 hover:bg-white/10 text-white rounded-xl transition-colors"
+      title="Réinitialiser"
+    >
+      <i class="pi pi-undo text-lg"></i>
+    </button>
+  </div>
+
+  <!-- Navigation Gauche -->
+  <button
+    (click)="prevImage($event)"
+    class="absolute left-6 top-1/2 -translate-y-1/2 z-[100001] p-5 bg-white/10 hover:bg-white/25 text-white rounded-full transition-all hover:-translate-x-2"
+    [disabled]="viewerImages().length <= 1"
+  >
+    <i class="pi pi-chevron-left text-2xl font-bold"></i>
+  </button>
+
+  <!-- Navigation Droite -->
+  <button
+    (click)="nextImage($event)"
+    class="absolute right-6 top-1/2 -translate-y-1/2 z-[100001] p-5 bg-white/10 hover:bg-white/25 text-white rounded-full transition-all hover:translate-x-2"
+    [disabled]="viewerImages().length <= 1"
+  >
+    <i class="pi pi-chevron-right text-2xl font-bold"></i>
+  </button>
+
+  <!-- Compteur -->
+  <div
+    class="absolute bottom-10 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-white text-sm font-medium z-[100001]"
+  >
+    {{ currentIndex() + 1 }} / {{ viewerImages().length }}
+  </div>
+
+  <!-- Image Principale -->
+  <div class="relative w-full h-full flex items-center justify-center p-12 overflow-hidden">
+    <img
+      [src]="viewerImages()[currentIndex()].file_url"
+      class="max-w-full max-h-full object-contain shadow-2xl transition-transform duration-300"
+      [style.transform]="'scale(' + zoom() + ') rotate(' + rotation() + 'deg)'"
+      [alt]="'Photo ' + (currentIndex() + 1)"
+    />
+  </div>
+</div>
+}
