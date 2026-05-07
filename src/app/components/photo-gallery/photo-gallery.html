@@ -74,12 +74,14 @@
       >
         @for (photo of orphanPhotos(); track $index) {
         <div
-          class="aspect-square relative group overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-xl transition-all duration-500 border border-white cursor-pointer"
+          class="aspect-square relative group overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-xl border border-white cursor-pointer"
         >
           <p-image
             imageClass="w-full h-full object-cover"
             [src]="photo.file_url"
             [preview]="true"
+            class="w-full h-full"
+            imageClass="object-cover w-full h-full"
           />
         </div>
         } @empty {
