@@ -1,5 +1,6 @@
 import {UserForm} from '@/app/components/user';
 import {AuthProvider} from '@/app/providers';
+import {labeledRole} from '@/app/utils';
 import {Role, Status, User, UserService} from '@aaajm/client';
 import {Component, computed, inject, resource, signal} from '@angular/core';
 import {MenuItem} from 'primeng/api';
@@ -42,12 +43,7 @@ export class UserPage {
     [Status.Disabled]: 'Désactivé',
   };
 
-  labeledRole: {[key: string]: string} = {
-    [Role.Admin]: 'Administrateur',
-    [Role.None]: 'Aucun',
-    [Role.SuperAdmin]: 'G.Administrateur',
-  };
-
+  labeledRole = labeledRole;
   openDialog = (user?: User | null) => {
     this.selectedUser.set(user || null);
     this.visibleDialog.set(true);

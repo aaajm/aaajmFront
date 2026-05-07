@@ -8,6 +8,7 @@ import {ButtonModule} from 'primeng/button';
 import {DrawerModule} from 'primeng/drawer';
 import {MenuModule} from 'primeng/menu';
 import {MenubarModule} from 'primeng/menubar';
+import {labeledRole} from '../../utils/default-value';
 type Route = {
   url: string;
   label: string;
@@ -31,6 +32,8 @@ export class SidebarContent {
   authProvider = inject(AuthProvider);
   readonly loggedUser = computed(() => this.authProvider.currentUser());
   readonly currentUrl = computed(() => this.router.url);
+
+  labeledRole = labeledRole;
 
   asMenu(val: any): MenuItem {
     return val;

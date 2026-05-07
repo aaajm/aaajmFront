@@ -72,23 +72,16 @@
       <div
         class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500"
       >
-        @for (photo of files(); track $index) {
+        @for (photo of orphanPhotos(); track $index) {
         <div
-          (click)="openViewer(files(), $index)"
           class="aspect-square relative group overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-xl transition-all duration-500 border border-white cursor-pointer"
         >
-          <img
+          <p-image
+            imageClass="w-full h-full object-cover"
             [src]="photo.file_url"
-            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            loading="lazy"
+            [preview]="true"
           />
-          <div
-            class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4"
-          >
-            <i class="pi pi-search-plus text-white/80 text-xl m-auto"></i>
-          </div>
         </div>
-
         } @empty {
         <div class="col-span-full py-20 text-center text-gray-500">
           <i class="pi pi-image text-5xl mb-4 block text-gray-300"></i>

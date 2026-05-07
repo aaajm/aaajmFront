@@ -5,14 +5,6 @@
 </div>
 
 <nav class="flex-1 space-y-2 text-gray-800">
-  <!-- @for (route of possibleRoutes(); track $index) { @if(route.authorized){
-  <a
-    [href]="route.routerLink"
-    class="flex items-center gap-3 p-3  text-sm uppercase tracking-widest font-bold rounded-xl {{currentUrl().startsWith(route.routerLink) ? 'bg-blue-600/10':'' }}"
-  >
-    {{route.label}}
-  </a>
-  } } -->
   <p-menu [model]="possibleRoutes()">
     <ng-template #submenuheader let-item>
       <span class="text-primary font-bold">{{ item.label }}</span>
@@ -43,7 +35,7 @@
   ></p-avatar>
   <div class="text-sm">
     <p class="font-bold">{{loggedUser()?.firstname}}</p>
-    <p class="text-gray-500 text-xs">role</p>
+    <p class="text-gray-500 text-xs">{{labeledRole[loggedUser()?.role!]}}</p>
   </div>
 </div>
 <p-button

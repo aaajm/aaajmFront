@@ -1,5 +1,6 @@
 import {Album, AlbumSummary, FileInfo, FileService} from '@aaajm/client';
 import {CommonModule} from '@angular/common';
+import {HttpClient} from '@angular/common/http';
 import {
   Component,
   computed,
@@ -8,17 +9,19 @@ import {
   resource,
   signal,
 } from '@angular/core';
+import {ImageModule} from 'primeng/image';
 import {firstValueFrom} from 'rxjs';
 
 @Component({
   selector: 'app-photo-gallery',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ImageModule],
   templateUrl: './photo-gallery.html',
   styleUrl: './photo-gallery.css',
 })
 export class PhotoGallery {
   fileService = inject(FileService);
+  private http = inject(HttpClient);
 
   // 1. Load light summaries for the list (RAM optimization)
   albumSummaryResource = resource({
@@ -50,20 +53,16 @@ export class PhotoGallery {
     return null;
   });
 
-  // For the "Photos" tab (all photos), we still need full data if we want to show everything.
-  // To keep it simple for now, we'll fetch them separately or keep them empty if memory is a concern.
-  allAlbumsResource = resource({
-    loader: () => firstValueFrom(this.fileService.getAlbums('')),
+  orphansResource = resource({
+    loader: (): Promise<FileInfo[]> =>
+      firstValueFrom(
+        this.http.get<FileInfo[]>(
+          `${import.meta.env.NG_APP_API_URL}/files/orphans`
+        )
+      ).catch(() => []),
   });
 
-  files = computed(() => {
-    if (this.allAlbumsResource.hasValue()) {
-      return this.allAlbumsResource
-        .value()
-        .flatMap((album) => album.medias || []);
-    }
-    return [];
-  });
+  orphanPhotos = computed(() => this.orphansResource.value() ?? []);
 
   activeTab = 'vos-photos';
 

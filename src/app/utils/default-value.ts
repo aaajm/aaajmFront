@@ -51,3 +51,9 @@ export const DEFAULT_USER = () =>
     role: Role.None,
     profile: '',
   }) as User;
+
+export const labeledRole: {[key: string]: string} = {
+  [Role.Admin]: 'Administrateur',
+  [Role.None]: 'Aucun',
+  [Role.SuperAdmin]: 'G.Administrateur',
+};
