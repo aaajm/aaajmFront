@@ -1,20 +1,11 @@
-<div class="min-h-screen bg-aaajm-cream font-serif text-slate-900 pb-20">
+<div class="min-h-screen font-serif text-slate-900 pb-10">
   @if (topic!=null) {
-  <main class="container mx-auto px-6 max-w-6xl pt-16">
+  <main class="container mx-auto px-6 max-w-6xl border-2 rounded-xl">
     <div class="flex flex-col lg:flex-row gap-16">
       <div>
         <header class="mb-2">
-          <p class="text-gray-700 font-bold uppercase">
-            {{formatDate(topic.creationDatetime!) || ""}}
-          </p>
-          <h1
-            class="text-4xl md:text-6xl font-bold text-aaajm-dark mt-4 leading-tight"
-          >
-            {{topic.title}}
-          </h1>
-
           <div
-            class="flex items-center justify-between mt-8 py-6 border-y border-gray-100"
+            class="flex items-center justify-between py-6 border-b-2 border-gray-100"
           >
             <div class="flex items-center gap-3">
               <p-avatar
@@ -27,7 +18,10 @@
                   >{{topic.createdBy.firstname || ""}}
                   {{topic.createdBy.lastname || ""}}</span
                 >
-                <span class="text-gray-500 font-sans">Modérateur</span>
+                <span class="text-gray-500 font-sans"
+                  >Modérateur | {{formatDate(topic.creationDatetime!) ||
+                  ""}}</span
+                >
               </div>
             </div>
           </div>
@@ -42,11 +36,19 @@
         }
         <p-editor
           [readonly]="true"
-          [(ngModel)]="topic.description"
+          [ngModel]="collapsed() ? textState().truncated : textState().text"
           (onInit)="handleInit()"
         >
           <ng-template #header></ng-template>
         </p-editor>
+        @if (textState().overflows) {
+        <p-button
+          (onClick)="toggleCollapsed()"
+          size="large"
+          class="text-2xl"
+          [label]="collapsed() ? 'voir plus' : 'voir moin'"
+        />
+        }
       </div>
     </div>
 
@@ -57,22 +59,39 @@
       </div>
 
       <section class="py-5">
-        <div class="flex flex-wrap gap-4">
-          @for (img of topic.images; track img.file_url) {
-          <div
-            class="relative flex-grow md:h-[400px] max-h-[200px] md:max-h-[300px] overflow-hidden rounded-2xl shadow-md group"
-          >
-            <p-image
-              class="w-full h-full object-cover"
-              imageClass="w-full h-full object-cover rounded-xl group-hover:scale-110 transition-transform duration-700 object-cover"
-              [src]="img.file_url"
-              alt=" "
-              [preview]="true"
-            />
-          </div>
-          }
-          <div class="flex-grow-[10] invisible"></div>
-        </div>
+        <p-galleria
+          [value]="topic.images"
+          [numVisible]="5"
+          [containerStyle]="{ 'width': '100%' }"
+          [showItemNavigators]="true"
+          contentHeight="500px"
+        >
+          <ng-template #item let-item>
+            @let file = asFile(item);
+            <div
+              class="flex justify-center items-center w-full h-[500px] bg-gray-100 overflow-hidden rounded-md"
+            >
+              <p-image
+                [src]="file.file_url"
+                [preview]="true"
+                class="w-full h-full flex justify-center items-center"
+                imageClass="max-w-full max-h-full object-contain shadow-sm"
+              />
+            </div>
+          </ng-template>
+
+          <ng-template #thumbnail let-item>
+            @let file = asFile(item);
+            <div
+              class="flex justify-center items-center w-full h-[80px] overflow-hidden rounded-md border"
+            >
+              <img
+                [src]="file.file_url"
+                class="w-full h-full object-cover block"
+              />
+            </div>
+          </ng-template>
+        </p-galleria>
       </section>
     </section>
     }

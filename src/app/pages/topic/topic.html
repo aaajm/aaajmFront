@@ -1,6 +1,8 @@
+<app-banner></app-banner>
 @if (topicResource.isLoading()) {
 <app-skeleton />
-} @if (!topicResource.isLoading() &&topic() == null) {
+} @if (!topicResource.isLoading() && topics() == null) {
 <span class="text-center mx-auto">Aucun contenu</span>
+} @for (item of topics(); track $index) {
+<topic [topic]="item"></topic>
 }
-<topic [topic]="topic()"></topic>

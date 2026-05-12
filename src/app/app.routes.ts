@@ -5,7 +5,7 @@ import {Login} from '@/app/pages/login';
 import {NotFound} from '@/app/pages/not-found';
 import {PartnerPage} from '@/app/pages/partner';
 import {ProfilePage} from '@/app/pages/profile';
-import {TopicManage, TopicPage, TopicSummaryPage} from '@/app/pages/topic';
+import {TopicManage, TopicPage} from '@/app/pages/topic';
 import {VerifyEmail} from '@/app/pages/verify-email';
 import {AdminGuard} from '@/app/utils';
 import {Routes} from '@angular/router';
@@ -26,12 +26,11 @@ export const routes: Routes = [
       {path: 'authentication/verify-email', component: VerifyEmail},
       {path: 'change-password', component: ChangePassword},
       {path: 'partner', component: PartnerPage},
-      {path: 'photo-form', component: PhotoForm , canActivate: [AdminGuard]},
+      {path: 'photo-form', component: PhotoForm, canActivate: [AdminGuard]},
       {path: 'album', component: PhotoGallery},
-      {path: 'content/:topicId', component: TopicPage},
       {path: 'topic', component: TopicManage, canActivate: [AdminGuard]},
       {path: 'user', component: UserPage, canActivate: [AdminGuard]},
-      {path: 'content', component: TopicSummaryPage},
+      {path: 'content', component: TopicPage},
       {path: 'member', component: MemberPage},
       {path: '**', component: NotFound},
     ],

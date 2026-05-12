@@ -12,7 +12,7 @@
   "private": true,
   "packageManager": "npm@10.8.2",
   "dependencies": {
-    "@aaajm/client": "^1.0.23",
+    "@aaajm/client": "^1.0.25",
     "@angular/cdk": "^21.2.7",
     "@angular/common": "^21.2.0",
     "@angular/compiler": "^21.2.0",
