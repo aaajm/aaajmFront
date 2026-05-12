@@ -3,6 +3,7 @@ import {Component, inject, signal} from '@angular/core';
 import {ButtonModule} from 'primeng/button';
 import {DrawerModule} from 'primeng/drawer';
 import {SidebarContent} from './sidebar-content';
+import {SidebarService} from './sidebar.service';
 
 @Component({
   selector: 'sidebar',
@@ -13,6 +14,7 @@ import {SidebarContent} from './sidebar-content';
 export class Sidebar {
   screen = inject(Screen);
   visibleSidebar = signal<boolean>(false);
+  sidebarService = inject(SidebarService);
   closeSidebar = () => this.visibleSidebar.set(false);
   openSidebar = () => this.visibleSidebar.set(true);
 }

@@ -1,24 +1,23 @@
 <div class="flex md:min-h-screen font-sans">
-  @if (!screen.isMobile()) {
+  <!-- @if (!screen.isMobile()) {
   <sidebar-content
     class="w-64 border-r border-gray-800 h-screen flex flex-col p-6 space-y-8"
   ></sidebar-content>
-  }
+  } -->
 
   <p-drawer
-    [visible]="visibleSidebar()"
-    (onHide)="closeSidebar()"
-    (visibleChange)="visibleSidebar.set($event)"
-    [closable]="false"
+    [visible]="sidebarService.visible()"
+    (onHide)="sidebarService.close()"
+    [closable]="true"
   >
     <sidebar-content
       class="w-full h-full flex flex-col gap-5"
     ></sidebar-content>
   </p-drawer>
 </div>
-@if(screen.isMobile()){<p-button
+<!-- @if(screen.isMobile()){<p-button
   class="bg-black text-white py-2 absolute z-50 rounded-e-xl top-[10%]"
   (onClick)="openSidebar()"
   icon="pi pi-arrow-right"
 ></p-button
->}
+>} -->

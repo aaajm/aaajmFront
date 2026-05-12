@@ -1,6 +1,7 @@
 export * from './admin-guard';
 export * from './date';
 export * from './default-value';
+export * from './route';
 export * from './screen';
 export * from './toast';
 export * from './uuid';

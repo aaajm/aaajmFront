@@ -1,0 +1,30 @@
+<header class="sticky top-0 z-50 bg-white border-b-2 border-gray-200">
+  <nav class="container mx-auto h-18 gap-5 flex items-center justify-between">
+    <div
+      class="w-16 h-16 flex justify-center font-bold rounded-full bg-[#D03830] text-white border-none items-center m-2"
+    >
+      AAAJM
+    </div>
+
+    @if(!screen.isMobile()){
+
+    <div
+      class="flex items-center gap-8 text-sm uppercase tracking-widest text-gray-600"
+    >
+      @for (route of possibleRoutes; track $index) {
+
+      <a
+        [href]="route.routerLink"
+        class="font-bold cursor-pointer hover:text-archive-dark hover:border-b-2 border-gray-500 {{currentUrl().startsWith(route.routerLink) ? 'border-b-2':'' }}"
+      >
+        {{route.label}}
+      </a>
+
+      }
+    </div>
+
+    } @if (screen.isMobile() || authProvider.isAdmin()) {
+    <p-button icon="pi pi-bars" (click)="sidebarService.open()"></p-button>
+    }
+  </nav>
+</header>

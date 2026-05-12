@@ -1,4 +1,5 @@
 import {AuthProvider} from '@/app/providers';
+import {anonymousRoutes, authRoutes} from '@/app/utils';
 import {Screen} from '@/app/utils/screen';
 import {Component, computed, inject} from '@angular/core';
 import {Router} from '@angular/router';
@@ -39,62 +40,10 @@ export class SidebarContent {
     return val;
   }
 
-  authRoutes: MenuItem[] = [
-    {
-      label: 'Administrateur',
-      items: [
-        {
-          routerLink: '/profile',
-          label: 'Mon profil',
-        },
-
-        {
-          routerLink: '/user',
-          label: 'Utilisateurs',
-        },
-        {
-          routerLink: '/topic',
-          label: 'Actialités',
-        },
-        {
-          routerLink: '/photo-form',
-          label: 'Album',
-        },
-      ],
-    },
-  ];
-  anonymousRoutes: MenuItem[] = [
-    {
-      label: 'Navigation',
-      items: [
-        {
-          routerLink: '/home',
-          label: 'Qui somme nous',
-        },
-        {
-          routerLink: '/member',
-          label: 'Nos membres',
-        },
-        {
-          routerLink: '/album',
-          label: 'Galerie',
-        },
-        {
-          routerLink: '/content',
-          label: 'Contenu',
-        },
-        {
-          routerLink: '/partner',
-          label: 'Partenaires',
-        },
-      ],
-    },
-  ];
-
   possibleRoutes = computed(() => {
     return this.authProvider.isLoggedIn()
-      ? [...this.anonymousRoutes, ...this.authRoutes]
-      : this.anonymousRoutes;
+      ? [...anonymousRoutes, ...authRoutes]
+      : anonymousRoutes;
   });
 
   navigate(route: string) {
