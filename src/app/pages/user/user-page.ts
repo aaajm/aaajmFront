@@ -3,8 +3,9 @@ import {AuthProvider} from '@/app/providers';
 import {labeledRole} from '@/app/utils';
 import {Role, Status, User, UserService} from '@aaajm/client';
 import {Component, computed, inject, resource, signal} from '@angular/core';
-import {MenuItem} from 'primeng/api';
+import {ConfirmationService, MenuItem} from 'primeng/api';
 import {ButtonModule} from 'primeng/button';
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
 import {DialogModule} from 'primeng/dialog';
 import {MenuModule} from 'primeng/menu';
 import {PopoverModule} from 'primeng/popover';
@@ -24,14 +25,21 @@ import {firstValueFrom} from 'rxjs';
     UserForm,
     PopoverModule,
     MenuModule,
+    ConfirmDialogModule,
     TagModule,
     TooltipModule,
   ],
+  providers: [ConfirmationService],
 })
 export class UserPage {
   visibleDialog = signal<boolean>(false);
   authProvider = inject(AuthProvider);
   selectedUser = signal<User | null>(null);
+  private confirmationService = inject(ConfirmationService);
+
+  asUser(val: any) {
+    return val as User;
+  }
   Status = Status;
   tagSeverity: {[key: string]: 'info' | 'secondary' | 'success'} = {
     [Role.Admin]: 'info',
@@ -44,6 +52,27 @@ export class UserPage {
   };
 
   labeledRole = labeledRole;
+  confirmInvitUser(event: Event, userId: string) {
+    event.stopPropagation();
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Voulez-vous vraiment inviter cette personne?',
+      header: 'Cette action est irréversible',
+      icon: 'pi pi-info-circle',
+      rejectLabel: 'Annuler',
+      rejectButtonProps: {
+        label: 'Annuler',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Inviter',
+        severity: 'danger',
+      },
+
+      accept: () => {},
+    });
+  }
   openDialog = (user?: User | null) => {
     this.selectedUser.set(user || null);
     this.visibleDialog.set(true);

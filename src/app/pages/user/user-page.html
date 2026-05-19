@@ -28,7 +28,8 @@
           <th>Actions</th>
         </tr>
       </ng-template>
-      <ng-template #body let-user>
+      <ng-template #body let-el>
+        @let user = asUser(el);
         <tr>
           <td>{{user.firstname}}</td>
           <td>{{ user.lastname }}</td>
@@ -37,7 +38,7 @@
           <td>
             <p-tag
               [severity]="user.status == Status.Enabled ? 'success' : 'danger'"
-              [value]="labeledStatus[user.status]"
+              [value]="labeledStatus[user.status!]"
             ></p-tag>
           </td>
           <td>
@@ -56,11 +57,12 @@
               [outlined]="true"
               (click)="openDialog(user)"
             />
-            @if(authProvider.isAdmin()){
+            @if(authProvider.isAdmin() && user.role == "NONE"){
             <p-button
               icon="pi pi-key"
               pTooltip="Inviter"
               tooltipPosition="bottom"
+              (click)="confirmInvitUser($event, user.id)"
               severity="danger"
               [rounded]="true"
               [outlined]="true"
@@ -72,6 +74,7 @@
     </p-table>
   </div>
 </section>
+<p-confirm-dialog />
 
 <p-dialog
   header="Créer et modifier des informations"
