@@ -1,1 +1,24 @@
-<p>partner works!</p>
+<div class="container mx-auto flex flex-col mb-5">
+  <h2 class="text-4xl font-bold font-serif text-[#D03830] mb-6 tracking-tight">
+    Partenaires
+  </h2>
+  <p-carousel
+    [value]="partners()"
+    [numVisible]="3"
+    [numScroll]="1"
+    [circular]="true"
+    autoplayInterval="3000"
+  >
+    <ng-template let-item #item>
+      @let partner = asPartner(item);
+      <div
+        class="border p-4 m-1 rounded-md flex flex-col items-center justify-center bg-white h-48"
+      >
+        <span class="mb-3 font-bold text-md text-gray-700"
+          >{{partner.name}}</span
+        >
+        <img [src]="partner.logo" class="w-full h-24 object-contain" alt=" " />
+      </div>
+    </ng-template>
+  </p-carousel>
+</div>
