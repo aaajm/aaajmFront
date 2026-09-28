@@ -10,6 +10,9 @@ import {SidebarService} from './sidebar.service';
   standalone: true,
   imports: [SidebarContent, DrawerModule, ButtonModule],
   templateUrl: './sidebar.html',
+  host: {
+    class: 'contents',
+  },
 })
 export class Sidebar {
   screen = inject(Screen);

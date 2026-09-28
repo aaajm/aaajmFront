@@ -1,4 +1,4 @@
-import {AuthProvider} from '@/app/providers';
+import {AuthProvider, AuthStorage} from './auth.provider';
 import {FingerprintService} from '@/app/services';
 import {
   HttpErrorResponse,
@@ -19,9 +19,14 @@ export function authInterceptor(
 
   return from(fingerprintService.getFingerprint()).pipe(
     switchMap((fingerprint) => {
-      const newReq = request.clone({
-        headers: request.headers.append('X-User-Fingerprint', fingerprint),
-      });
+      const token = AuthStorage.accessToken();
+      const headers: Record<string, string> = {
+        'X-User-Fingerprint': fingerprint,
+      };
+      if (token && !request.headers.has('Authorization')) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      const newReq = request.clone({setHeaders: headers});
 
       return next(newReq).pipe(
         catchError((error: HttpErrorResponse) => {

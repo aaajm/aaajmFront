@@ -1,3 +1,5 @@
+import {AuthProvider} from '@/app/providers';
+import {ToastService} from '@/app/utils';
 import {Album, AlbumSummary, FileInfo, FileService} from '@aaajm/client';
 import {CommonModule} from '@angular/common';
 import {HttpClient} from '@angular/common/http';
@@ -9,19 +11,20 @@ import {
   resource,
   signal,
 } from '@angular/core';
-import {ImageModule} from 'primeng/image';
 import {firstValueFrom} from 'rxjs';
 
 @Component({
   selector: 'app-photo-gallery',
   standalone: true,
-  imports: [CommonModule, ImageModule],
+  imports: [CommonModule],
   templateUrl: './photo-gallery.html',
   styleUrl: './photo-gallery.css',
 })
 export class PhotoGallery {
   fileService = inject(FileService);
+  authProvider = inject(AuthProvider);
   private http = inject(HttpClient);
+  private toast = inject(ToastService);
 
   // 1. Load light summaries for the list (RAM optimization)
   albumSummaryResource = resource({
@@ -163,6 +166,50 @@ export class PhotoGallery {
       }
     } catch (error) {
       console.error('Erreur ouverture viewer album:', error);
+    }
+  }
+
+  async deletePhoto(event: Event, photoId: string | undefined) {
+    event.stopPropagation();
+    if (!photoId || !this.authProvider.isAdmin()) return;
+    if (!confirm('Voulez-vous vraiment supprimer cette photo ?')) return;
+    try {
+      await firstValueFrom(this.fileService.deleteFile(photoId));
+      this.toast.message('success', 'Succès', 'Photo supprimée');
+      this.orphansResource.reload();
+      this.albumDetailsResource.reload();
+      this.albumSummaryResource.reload();
+      const remaining = this.viewerImages().filter((img) => img.id !== photoId);
+      this.viewerImages.set(remaining);
+      if (remaining.length === 0) {
+        this.closeViewer();
+      } else {
+        this.currentIndex.set(
+          Math.min(this.currentIndex(), remaining.length - 1)
+        );
+      }
+    } catch (error) {
+      console.error('Failed to delete photo', error);
+    }
+  }
+
+  async deleteAlbum(event: Event, albumId: string | undefined) {
+    event.stopPropagation();
+    if (!albumId || !this.authProvider.isAdmin()) return;
+    if (!confirm('Voulez-vous vraiment supprimer cet album et ses photos ?')) {
+      return;
+    }
+    try {
+      await firstValueFrom(this.fileService.removeCompleteAlbum(albumId, true));
+      this.toast.message('success', 'Succès', 'Album supprimé');
+      if (this.selectedAlbum()?.id === albumId) {
+        this.selectedAlbum.set(null);
+      }
+      this.albumSummaryResource.reload();
+      this.orphansResource.reload();
+      this.closeViewer();
+    } catch (error) {
+      console.error('Failed to delete album', error);
     }
   }
 }

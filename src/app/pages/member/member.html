@@ -30,7 +30,7 @@
     @if (!userResource.isLoading() && users().length < 1) {
     <span class="text-center mx-auto">Aucun contenu</span>
     } @for (member of users(); track $index) {
-    <app-member [member]="member"></app-member>
+    <app-member [member]="member" (deleted)="deleteMember($event, member)"></app-member>
     }
   </div>
 </section>

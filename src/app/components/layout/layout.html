@@ -1,12 +1,25 @@
-<div class="flex w-full h-screen font-sans">
+<div
+  class="flex w-full font-sans"
+  [class.h-screen]="contentLock()"
+  [class.min-h-screen]="!contentLock()"
+  [class.overflow-hidden]="contentLock()"
+>
   <sidebar></sidebar>
-  <main class="flex-1 flex flex-col relative w-[calc(100vw-16rem)]">
-    <app-navbar></app-navbar>
-    <div class="flex-1 overflow-y-auto flex flex-col">
-      <div class="flex-1">
+  <main
+    class="flex-1 flex flex-col min-w-0 w-full"
+    [class.h-full]="contentLock()"
+    [class.min-h-0]="contentLock()"
+  >
+    <app-navbar class="shrink-0"></app-navbar>
+    @if (contentLock()) {
+      <div class="flex-1 min-h-0 overflow-hidden">
         <router-outlet></router-outlet>
       </div>
-      <app-footer></app-footer>
-    </div>
+    } @else {
+      <div class="flex-1 w-full">
+        <router-outlet></router-outlet>
+      </div>
+      <app-footer class="shrink-0"></app-footer>
+    }
   </main>
 </div>

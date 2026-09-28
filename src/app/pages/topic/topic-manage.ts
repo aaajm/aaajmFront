@@ -1,6 +1,6 @@
 import {TopicForm} from '@/app/components/topic';
 import {AuthProvider} from '@/app/providers';
-import {formatDatetime} from '@/app/utils';
+import {formatDatetime, ToastService} from '@/app/utils';
 import {TopicService, TopicSummary} from '@aaajm/client';
 import {Component, computed, inject, resource, signal} from '@angular/core';
 import {MenuItem} from 'primeng/api';
@@ -24,6 +24,7 @@ export class TopicManage {
   formatDate = formatDatetime;
   authProvider = inject(AuthProvider);
   topicService = inject(TopicService);
+  private toast = inject(ToastService);
 
   openDialog = (topic?: TopicSummary | null) => {
     this.selectedTopic.set(topic || null);
@@ -55,9 +56,33 @@ export class TopicManage {
 
   topics = computed(() => {
     if (this.topicResource.hasValue()) {
-      return this.topicResource.value();
+      return [...this.topicResource.value()].sort((a, b) => {
+        const da = new Date(a.creationDatetime || 0).getTime();
+        const db = new Date(b.creationDatetime || 0).getTime();
+        return db - da;
+      });
     }
 
     return [];
   });
+
+  async deleteTopic(topic: TopicSummary) {
+    if (!confirm('Voulez-vous vraiment supprimer ce contenu ?')) {
+      return;
+    }
+    const deleteImage = confirm(
+      'Supprimer aussi les photos associées (galerie incluse) ?'
+    );
+    try {
+      await firstValueFrom(this.topicService.deleteTopic(topic.id, deleteImage));
+      this.toast.message(
+        'success',
+        'Succès',
+        deleteImage ? 'Contenu et photos supprimés' : 'Contenu supprimé'
+      );
+      this.topicResource.reload();
+    } catch (err) {
+      console.error('Failed to delete topic', err);
+    }
+  }
 }

@@ -153,6 +153,14 @@ export class PhotoForm implements OnInit {
     }
   }
 
+  isOrphanSelected(photoId: string | undefined) {
+    return !!photoId && this.selectedOrphans().includes(photoId);
+  }
+
+  clearOrphanSelection() {
+    this.selectedOrphans.set([]);
+  }
+
   ngOnInit() {
     this.resetForm();
   }
@@ -217,6 +225,14 @@ export class PhotoForm implements OnInit {
         this.toast.message('success', 'Photo supprimée');
         this.selectedAlbumDetailsResource.reload();
         this.albumsResource.reload();
+        this.orphansResource.reload();
+        const remaining = this.viewerImages().filter((img) => img.id !== photoId);
+        this.viewerImages.set(remaining);
+        if (remaining.length === 0) {
+          this.closeViewer();
+        } else {
+          this.currentIndex.set(Math.min(this.currentIndex(), remaining.length - 1));
+        }
       },
     });
   }
@@ -294,6 +310,7 @@ export class PhotoForm implements OnInit {
   resetForm() {
     this.photoForm.reset(DEFAULT_ALBUM(this.authProvider.currentUser()?.id));
     this.imageFiles.set([]);
+    this.selectedOrphans.set([]);
     this.fileComponent?.clear();
   }
 
@@ -315,16 +332,19 @@ export class PhotoForm implements OnInit {
     await this.submitPhotoState.request({
       request: from(
         (async () => {
-          // 1. Upload des nouvelles images
           let resultAlbum: Album | null = null;
-          if (this.imageFiles().length > 0) {
+          const orphansToMove = this.selectedOrphans();
+          const hasUploads = this.imageFiles().length > 0;
+
+          if (hasUploads || orphansToMove.length > 0) {
             resultAlbum = await firstValueFrom(
-              this.fileService.addMediaToAlbum(albumData, this.imageFiles())
+              this.fileService.addMediaToAlbum(
+                albumData,
+                hasUploads ? this.imageFiles() : []
+              )
             );
           }
 
-          // 2. Déplacement des photos orphelines sélectionnées
-          const orphansToMove = this.selectedOrphans();
           const finalAlbumId = resultAlbum?.id || albumData.id;
 
           if (orphansToMove.length > 0 && finalAlbumId) {

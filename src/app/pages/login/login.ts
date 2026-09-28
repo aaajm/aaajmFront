@@ -2,7 +2,7 @@ import {AuthProvider} from '@/app/providers';
 import {HttpStateService} from '@/app/services';
 import {DEFAULT_LOGIN, runZodValidation} from '@/app/utils';
 import {Screen} from '@/app/utils/screen';
-import {SecurityService, Signin} from '@aaajm/client';
+import {SecurityService, Signin, Whoami} from '@aaajm/client';
 import {signinSchema} from '@aaajm/client/zod';
 import {Component, inject, signal} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
@@ -16,6 +16,7 @@ import {InputTextModule} from 'primeng/inputtext';
 import {PasswordModule} from 'primeng/password';
 import {PopoverModule} from 'primeng/popover';
 import {StepperModule} from 'primeng/stepper';
+import {firstValueFrom} from 'rxjs';
 
 @Component({
   selector: 'login-form',
@@ -59,9 +60,25 @@ export class Login {
 
     await this.loginState.request({
       request: this.securityService.signin(parsedValue.data),
-      onSuccess: (token: string) => {
+      onSuccess: async (token: string) => {
         this.authProvider.setToken({accessToken: token, refresshToken: ''});
-        this.navigate('/authentication/verify-email');
+        try {
+          const whoami: Whoami = await firstValueFrom(this.securityService.whoami());
+          if (whoami?.user) {
+            this.authProvider.setUser(whoami.user);
+          }
+        } catch (e) {
+          console.error('Erreur lors de la récupération des infos utilisateur', e);
+        }
+        const redirectUrl = this.authProvider.redirectUrl;
+        if (redirectUrl) {
+          this.authProvider.redirectUrl = null;
+          this.navigate(redirectUrl);
+        } else if (this.authProvider.isAdmin()) {
+          this.navigate('/user');
+        } else {
+          this.navigate('/home');
+        }
       },
     });
   }

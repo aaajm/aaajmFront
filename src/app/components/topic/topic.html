@@ -1,100 +1,420 @@
-<div class="min-h-screen font-serif text-slate-900 pb-10">
-  @if (topic!=null) {
-  <main class="container mx-auto px-6 max-w-6xl border-2 rounded-xl">
-    <div class="flex flex-col lg:flex-row gap-16">
-      <div>
-        <header class="mb-2">
-          <div
-            class="flex items-center justify-between py-6 border-b-2 border-gray-100"
-          >
-            <div class="flex items-center gap-3">
-              <p-avatar
-                [image]="topic.createdBy.profile"
-                shape="circle"
-                size="large"
-              ></p-avatar>
-              <div class="flex flex-col">
-                <span class="text-xl font-bold"
-                  >{{topic.createdBy.firstname || ""}}
-                  {{topic.createdBy.lastname || ""}}</span
-                >
-                <span class="text-gray-500 font-sans"
-                  >Modérateur | {{formatDate(topic.creationDatetime!) ||
-                  ""}}</span
-                >
+<div class="font-sans text-slate-900 pb-4">
+  @if (topic != null) {
+  <main class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6 max-w-[680px] mx-auto overflow-hidden">
+    
+    <!-- 1. Header (Avatar, Name, Date) -->
+    <header class="flex items-start justify-between px-4 pt-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 flex-none rounded-full overflow-hidden bg-gray-100 flex items-center justify-center cursor-pointer border border-gray-200 hover:ring-2 hover:ring-blue-400 transition-all"
+             (click)="topic.createdBy.profile && showProfileZoom.set(true)">
+          @if (topic.createdBy.profile) {
+            <img [src]="topic.createdBy.profile" class="w-full h-full object-cover hover:scale-110 transition-transform duration-200" />
+          } @else {
+            <i class="pi pi-user text-gray-400 text-lg"></i>
+          }
+        </div>
+        <div class="flex flex-col leading-tight">
+          <span class="text-[15px] font-bold text-gray-900 hover:underline cursor-pointer flex items-center">
+            {{topic.createdBy.firstname || ""}} {{topic.createdBy.lastname || ""}}
+          </span>
+          <span class="text-[13px] text-gray-500 flex items-center gap-1 mt-0.5" title="Modérateur">
+            {{formatDate(topic.creationDatetime!)}}
+            <span aria-hidden="true">·</span>
+            <i class="pi pi-globe text-[11px]"></i>
+          </span>
+        </div>
+      </div>
+      <div class="relative">
+        <button class="text-gray-500 hover:bg-gray-100 rounded-full p-2 transition-colors"
+                (click)="topicMenuOpen.set(!topicMenuOpen()); $event.stopPropagation()">
+          <i class="pi pi-ellipsis-h text-lg"></i>
+        </button>
+        @if (topicMenuOpen() && authProvider.isAdmin()) {
+          <div class="absolute right-0 top-10 bg-white shadow-[0_4px_12px_rgba(0,0,0,0.15)] border border-gray-100 rounded-lg py-1 z-20 w-44 overflow-hidden"
+               (click)="$event.stopPropagation()">
+            <button class="w-full text-left px-4 py-2 text-[13px] font-semibold text-red-600 hover:bg-gray-100 transition-colors"
+                    (click)="deleteTopic(); topicMenuOpen.set(false)">
+              Supprimer le contenu
+            </button>
+          </div>
+        }
+      </div>
+    </header>
+
+    <!-- 2. Text Content -->
+    <div class="px-4 pt-1 pb-2">
+      @if(!editorLoaded()){
+        <p-skeleton width="100%" class="mb-2" />
+        <p-skeleton width="75%" class="mb-2" />
+        <p-skeleton width="90%" class="mb-2" />
+      }
+      @if (collapsed()) {
+        <p class="topic-body select-text m-0">{{ textState().truncated }}@if (textState().overflows) {<button type="button" class="topic-more" (click)="toggleCollapsed()"> Voir plus</button>}</p>
+      } @else {
+        <div class="topic-expanded">
+          <div class="topic-body select-text" [innerHTML]="textState().html"></div>
+          @if (textState().overflows) {
+            <button type="button" class="topic-more" (click)="toggleCollapsed()">Voir moins</button>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- 3. Image Collage Grid (FB Style) -->
+    @if (topic.images && topic.images.length > 0) {
+      <div class="mt-2 w-full bg-gray-100 rounded-xl overflow-hidden shadow-sm">
+        @let len = topic.images.length;
+        
+        @if (len === 1) {
+          <img [src]="asFile(topic.images[0]).file_url" class="w-full h-auto max-h-[700px] object-cover cursor-pointer hover:opacity-95 transition-opacity" (click)="openGallery(0)" />
+        } @else if (len === 2) {
+          <div class="grid grid-cols-2 gap-[2px] h-[400px]">
+            <img [src]="asFile(topic.images[0]).file_url" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity" (click)="openGallery(0)" />
+            <img [src]="asFile(topic.images[1]).file_url" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity" (click)="openGallery(1)" />
+          </div>
+        } @else if (len === 3) {
+          <div class="grid grid-cols-2 gap-[2px] h-[500px]">
+            <img [src]="asFile(topic.images[0]).file_url" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity col-span-1" (click)="openGallery(0)" />
+            <div class="grid grid-rows-2 gap-[2px] col-span-1">
+              <img [src]="asFile(topic.images[1]).file_url" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity" (click)="openGallery(1)" />
+              <img [src]="asFile(topic.images[2]).file_url" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity" (click)="openGallery(2)" />
+            </div>
+          </div>
+        } @else if (len === 4) {
+          <div class="grid grid-cols-2 grid-rows-2 gap-[2px] h-[500px]">
+            <img [src]="asFile(topic.images[0]).file_url" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity" (click)="openGallery(0)" />
+            <img [src]="asFile(topic.images[1]).file_url" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity" (click)="openGallery(1)" />
+            <img [src]="asFile(topic.images[2]).file_url" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity" (click)="openGallery(2)" />
+            <img [src]="asFile(topic.images[3]).file_url" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity" (click)="openGallery(3)" />
+          </div>
+        } @else {
+          <div class="grid grid-cols-2 grid-rows-2 gap-[2px] h-[500px]">
+            <img [src]="asFile(topic.images[0]).file_url" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity" (click)="openGallery(0)" />
+            <img [src]="asFile(topic.images[1]).file_url" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity" (click)="openGallery(1)" />
+            <img [src]="asFile(topic.images[2]).file_url" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity" (click)="openGallery(2)" />
+            <div class="relative w-full h-full cursor-pointer" (click)="openGallery(3)">
+              <img [src]="asFile(topic.images[3]).file_url" class="w-full h-full object-cover" />
+              <div class="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-4xl font-semibold tracking-wide">
+                +{{ len - 4 }}
               </div>
             </div>
           </div>
-        </header>
-        @if(!editorLoaded()){
-        <div class="w-full">
-          <p-skeleton width="100%" class="mb-2" />
-          <p-skeleton width="75%" class="mb-2" />
-          <p-skeleton width="100%" class="mb-2" />
-          <p-skeleton width="80%" class="mb-2" />
+        }
+      </div>
+    }
+
+    <!-- 4. Reactions and Footer Actions -->
+    <div class="px-4 py-2 bg-white">
+      <!-- Counts Row -->
+      <div class="flex items-center justify-between text-gray-500 text-[13px] border-b border-gray-300 pb-2 mb-1">
+        <div class="flex items-center gap-1 cursor-pointer hover:underline">
+          <div class="bg-blue-500 rounded-full w-4 h-4 flex items-center justify-center text-white text-[10px] shadow-sm z-10 border border-white">👍</div>
+          <div class="bg-red-500 rounded-full w-4 h-4 flex items-center justify-center text-white text-[10px] shadow-sm -ml-1.5 border border-white">❤️</div>
+          <span class="ml-1 select-none">{{ (reactions()?.counts?.['LIKE'] || 0) + (reactions()?.counts?.['LOVE'] || 0) + (reactions()?.counts?.['SUPPORT'] || 0) }}</span>
         </div>
-        }
-        <p-editor
-          [readonly]="true"
-          [ngModel]="collapsed() ? textState().truncated : textState().text"
-          (onInit)="handleInit()"
-        >
-          <ng-template #header></ng-template>
-        </p-editor>
-        @if (textState().overflows) {
-        <p-button
-          (onClick)="toggleCollapsed()"
-          size="large"
-          class="text-2xl"
-          [label]="collapsed() ? 'voir plus' : 'voir moin'"
-        />
-        }
+        <div class="flex items-center gap-3 select-none">
+          <span class="hover:underline cursor-pointer">{{ comments().length }} commentaires</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons Row -->
+      <div class="flex items-center justify-between px-1 py-1">
+        
+        <!-- J'aime button with Popup Group -->
+        <div class="flex-1 relative group">
+          <!-- Reaction Popup -->
+          <div class="absolute bottom-full left-1 z-50 mb-2 bg-white rounded-[32px] shadow-[0_4px_12px_rgba(0,0,0,0.15)] border border-gray-100 px-2 py-1.5 flex gap-1 
+                      transition-all duration-300 delay-300 group-hover:delay-500
+                      origin-bottom-left"
+               [ngClass]="showReactionPopup() ? 'scale-100 opacity-100 translate-y-0' : 'scale-75 opacity-0 translate-y-2 invisible group-hover:visible group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0'">
+            
+             <button (click)="react('LIKE'); $event.stopPropagation()" 
+                     class="w-10 h-10 hover:-translate-y-2 transform hover:scale-125 transition-all text-3xl flex items-center justify-center cursor-pointer hover:bg-gray-50 rounded-full" 
+                     title="J'aime">👍</button>
+             <button (click)="react('LOVE'); $event.stopPropagation()" 
+                     class="w-10 h-10 hover:-translate-y-2 transform hover:scale-125 transition-all text-3xl flex items-center justify-center cursor-pointer hover:bg-gray-50 rounded-full" 
+                     title="J'adore">❤️</button>
+             <button (click)="react('SUPPORT'); $event.stopPropagation()" 
+                     class="w-10 h-10 hover:-translate-y-2 transform hover:scale-125 transition-all text-3xl flex items-center justify-center cursor-pointer hover:bg-gray-50 rounded-full" 
+                     title="Soutien">🤝</button>
+          </div>
+
+          <button class="w-full flex items-center justify-center gap-2 py-1.5 rounded-md hover:bg-gray-100 font-semibold text-[14px] transition-colors {{ currentReactionColor }}"
+                  (click)="react(reactions()?.currentReaction ? '' : 'LIKE')"
+                  (touchstart)="startPress()"
+                  (touchend)="endPress()">
+            @if (reactions()?.currentReaction) {
+              <span class="text-base font-bold">{{ currentReactionIcon }}</span>
+              <span>{{ currentReactionText }}</span>
+            } @else {
+              <i class="pi pi-thumbs-up text-gray-600"></i>
+              <span class="text-gray-600">J'aime</span>
+            }
+          </button>
+        </div>
+
+        <button class="flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md hover:bg-gray-100 text-gray-600 font-semibold text-[14px] transition-colors">
+          <i class="pi pi-comment"></i>
+          <span>Commenter</span>
+        </button>
+        
+        <button class="flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md hover:bg-gray-100 text-gray-600 font-semibold text-[14px] transition-colors"
+                (click)="shareTopic()">
+           <i class="pi pi-share-alt"></i>
+           <span>Partager</span>
+        </button>
       </div>
     </div>
 
-    @if (topic.images && topic.images.length > 0) {
-    <section class="mt-2">
-      <div class="flex items-end justify-between">
-        <h2 class="text-3xl font-bold">Archives visuelles</h2>
-      </div>
+    <!-- 5. Comment Section -->
+    <section class="px-4 py-3 bg-gray-50 border-t border-gray-200">
+       
+       <!-- Input -->
+       <div class="flex gap-2 mb-4 relative items-start">
+         <span class="w-8 h-8 rounded-full bg-slate-200 flex-none flex items-center justify-center text-xs font-bold text-slate-700 shadow-sm border border-gray-300">
+           👤
+         </span>
+         <div class="flex flex-col w-full relative">
+           <textarea
+             [ngModel]="newCommentText()"
+             (ngModelChange)="newCommentText.set($event)"
+             rows="1"
+             style="min-height: 38px; border-radius: 19px;"
+             placeholder="Écrivez un commentaire..."
+             class="w-full bg-gray-200 border-none outline-none text-[14px] text-gray-800 px-4 py-2 resize-none focus:ring-0 leading-snug overflow-hidden"
+           ></textarea>
+           <button 
+             class="absolute right-3 top-2 text-blue-600 hover:text-blue-800 font-bold disabled:text-gray-400 cursor-pointer transition-colors"
+             [disabled]="!newCommentText().trim() || isSubmittingComment()"
+             (click)="postComment()">
+             <i class="pi pi-send text-sm"></i>
+           </button>
+         </div>
+       </div>
 
-      <section class="py-5">
-        <p-galleria
-          [value]="topic.images"
-          [numVisible]="5"
-          [containerStyle]="{ 'width': '100%' }"
-          [showItemNavigators]="true"
-          contentHeight="500px"
-        >
-          <ng-template #item let-item>
-            @let file = asFile(item);
-            <div
-              class="flex justify-center items-center w-full h-[500px] bg-gray-100 overflow-hidden rounded-md"
-            >
-              <p-image
-                [src]="file.file_url"
-                [preview]="true"
-                class="w-full h-full flex justify-center items-center"
-                imageClass="max-w-full max-h-full object-contain shadow-sm"
-              />
-            </div>
-          </ng-template>
+       <!-- Comments List -->
+       <div class="space-y-3">
+         @for (comment of comments(); track comment.id) {
+         <div class="flex gap-2 group/comment relative">
+           <span class="w-8 h-8 rounded-full bg-slate-200 flex-none flex items-center justify-center text-[10px] font-bold text-slate-700 mt-0.5 shadow-sm border border-gray-300">
+             💬
+           </span>
+           <div class="flex flex-col items-start max-w-full flex-1">
+             
+             @if (editingCommentId() === comment.id) {
+               <!-- Edit Mode -->
+               <div class="w-full relative mt-1 min-w-[200px] mb-2">
+                 <textarea
+                   [ngModel]="editCommentText()"
+                   (ngModelChange)="editCommentText.set($event)"
+                   rows="1"
+                   style="min-height: 38px; border-radius: 17px;"
+                   class="w-full bg-gray-100 border-none outline-none text-[14px] text-gray-800 px-4 py-2 resize-y focus:ring-2 focus:ring-blue-500 overflow-hidden leading-snug"
+                 ></textarea>
+                 <div class="flex items-center justify-end gap-4 mt-1 px-2">
+                    <button class="text-[12px] text-gray-600 font-semibold hover:underline cursor-pointer" (click)="cancelEditComment()">Annuler</button>
+                    <button class="text-[12px] text-blue-600 font-semibold hover:underline cursor-pointer" (click)="saveEditComment(comment.id)">Mettre à jour</button>
+                 </div>
+               </div>
+             } @else {
+               <!-- Normal Mode -->
+               <div class="bg-gray-200 rounded-2xl px-3 py-2 text-[14px] text-gray-800 leading-snug break-words relative w-full sm:w-auto pr-8">
+                 <span class="font-bold block text-[13px] hover:underline cursor-pointer mb-0.5 text-gray-900">
+                   Visiteur ({{ comment.fingerprint.slice(0, 8) }}...)
+                 </span>
+                 <span class="whitespace-pre-line">{{ comment.content }}</span>
+                 
+                 <!-- Edit / Delete ellipsis for author -->
+                 @if (comment.fingerprint === fingerprint()) {
+                   <button class="absolute top-2.5 right-2 w-6 h-6 rounded-full hover:bg-gray-300 text-gray-500 hover:text-gray-800 transition-colors opacity-0 group-hover/comment:opacity-100 flex items-center justify-center invisible sm:visible shadow-none border-none outline-none group-hover/comment:visible"
+                           (click)="activeCommentMenuId.set(activeCommentMenuId() === comment.id ? null : comment.id); $event.stopPropagation()">
+                     <i class="pi pi-ellipsis-h text-xs"></i>
+                   </button>
+                   
+                   @if (activeCommentMenuId() === comment.id) {
+                     <div class="absolute top-8 right-2 bg-white shadow-[0_4px_12px_rgba(0,0,0,0.15)] border border-gray-100 rounded-lg py-1 z-20 w-36 overflow-hidden">
+                       <button class="w-full text-left px-4 py-2 text-[13px] font-semibold text-gray-700 hover:bg-gray-100 transition-colors"
+                               (click)="startEditComment(comment); activeCommentMenuId.set(null)">Modifier</button>
+                       <button class="w-full text-left px-4 py-2 text-[13px] font-semibold text-red-600 hover:bg-gray-100 transition-colors"
+                               (click)="deleteComment(comment.id); activeCommentMenuId.set(null)">Supprimer</button>
+                     </div>
+                   }
+                 }
+               </div>
+               
+               <!-- Comment Footer Actions -->
+               <div class="flex items-center gap-3 ml-3 mt-1 text-[12px] text-gray-500 font-bold mb-1">
+                 <div class="relative group/reaction inline-block">
+                   <!-- Popup -->
+                   <div class="absolute bottom-full left-0 z-50 mb-1 bg-white rounded-[32px] shadow-[0_4px_12px_rgba(0,0,0,0.15)] border border-gray-100 px-2 py-1 flex gap-1 
+                               transition-all duration-300 delay-300 group-hover/reaction:delay-500 origin-bottom-left"
+                        [ngClass]="activeCommentReactionId() === comment.id ? 'scale-100 opacity-100 translate-y-0 visible' : 'scale-75 opacity-0 translate-y-2 invisible group-hover/reaction:visible group-hover/reaction:opacity-100 group-hover/reaction:scale-100 group-hover/reaction:translate-y-0'">
+                      
+                      <button class="w-7 h-7 hover:-translate-y-1 transform hover:scale-125 transition-all text-xl flex items-center justify-center cursor-pointer hover:bg-gray-50 rounded-full bg-transparent border-none" 
+                              (click)="reactToComment(comment.id, 'LIKE'); $event.stopPropagation()" title="J'aime">👍</button>
+                      <button class="w-7 h-7 hover:-translate-y-1 transform hover:scale-125 transition-all text-xl flex items-center justify-center cursor-pointer hover:bg-gray-50 rounded-full bg-transparent border-none" 
+                              (click)="reactToComment(comment.id, 'LOVE'); $event.stopPropagation()" title="J'adore">❤️</button>
+                      <button class="w-7 h-7 hover:-translate-y-1 transform hover:scale-125 transition-all text-xl flex items-center justify-center cursor-pointer hover:bg-gray-50 rounded-full bg-transparent border-none" 
+                              (click)="reactToComment(comment.id, 'SUPPORT'); $event.stopPropagation()" title="Soutien">🤝</button>
+                   </div>
+                   
+                   <span class="hover:underline cursor-pointer text-gray-500 inline-block"
+                         (click)="reactToComment(comment.id, getCommentCurrentReaction(comment.id) ? '' : 'LIKE'); $event.stopPropagation()"
+                         (touchstart)="startCommentReactionPress(comment.id); $event.stopPropagation()"
+                         (touchend)="endCommentReactionPress()">
+                     @if (getCommentCurrentReaction(comment.id) === 'LOVE') {
+                       <span class="text-red-600 font-bold">J'adore</span>
+                     } @else if (getCommentCurrentReaction(comment.id) === 'SUPPORT') {
+                       <span class="text-amber-600 font-bold">Soutien</span>
+                     } @else if (getCommentCurrentReaction(comment.id) === 'LIKE') {
+                       <span class="text-blue-600 font-bold">J'aime</span>
+                     } @else {
+                       J'aime
+                     }
+                   </span>
+                 </div>
+                 <span class="font-normal">{{ formatDate(comment.createdAt) }}</span>
+               </div>
+             }
 
-          <ng-template #thumbnail let-item>
-            @let file = asFile(item);
-            <div
-              class="flex justify-center items-center w-full h-[80px] overflow-hidden rounded-md border"
-            >
-              <img
-                [src]="file.file_url"
-                class="w-full h-full object-cover block"
-              />
-            </div>
-          </ng-template>
-        </p-galleria>
-      </section>
+             <!-- Admin Reply -->
+             @if (comment.adminReply) {
+               <div class="flex gap-2 mt-2 w-full">
+                 <div class="w-6 h-6 flex-none bg-blue-600 text-white rounded-full flex items-center justify-center shadow font-bold text-[10px]">A</div>
+                 <div class="flex flex-col w-full">
+                   <div class="bg-blue-50/50 rounded-2xl px-3 py-2 text-[14px] text-gray-800 leading-snug border border-blue-100">
+                     <span class="font-bold text-[13px] flex items-center gap-1 text-blue-700 mb-0.5 hover:underline cursor-pointer">
+                       AAAJM (Admin) <i class="pi pi-verified text-[11px]"></i>
+                     </span>
+                     <span class="block whitespace-pre-line">{{ comment.adminReply }}</span>
+                   </div>
+                   <div class="flex items-center gap-3 ml-3 mt-1 text-[12px] text-gray-500 font-bold">
+                     <div class="relative group/reaction inline-block">
+                       <!-- Popup -->
+                       <div class="absolute bottom-full left-0 z-50 mb-1 bg-white rounded-[32px] shadow-[0_4px_12px_rgba(0,0,0,0.15)] border border-gray-100 px-2 py-1 flex gap-1 
+                                   transition-all duration-300 delay-300 group-hover/reaction:delay-500 origin-bottom-left"
+                            [ngClass]="activeCommentReactionId() === comment.id + '-admin' ? 'scale-100 opacity-100 translate-y-0 visible' : 'scale-75 opacity-0 translate-y-2 invisible group-hover/reaction:visible group-hover/reaction:opacity-100 group-hover/reaction:scale-100 group-hover/reaction:translate-y-0'">
+                          
+                          <button class="w-7 h-7 hover:-translate-y-1 transform hover:scale-125 transition-all text-xl flex items-center justify-center cursor-pointer hover:bg-gray-50 rounded-full bg-transparent border-none" 
+                                  (click)="reactToComment(comment.id + '-admin', 'LIKE'); $event.stopPropagation()" title="J'aime">👍</button>
+                          <button class="w-7 h-7 hover:-translate-y-1 transform hover:scale-125 transition-all text-xl flex items-center justify-center cursor-pointer hover:bg-gray-50 rounded-full bg-transparent border-none" 
+                                  (click)="reactToComment(comment.id + '-admin', 'LOVE'); $event.stopPropagation()" title="J'adore">❤️</button>
+                          <button class="w-7 h-7 hover:-translate-y-1 transform hover:scale-125 transition-all text-xl flex items-center justify-center cursor-pointer hover:bg-gray-50 rounded-full bg-transparent border-none" 
+                                  (click)="reactToComment(comment.id + '-admin', 'SUPPORT'); $event.stopPropagation()" title="Soutien">🤝</button>
+                       </div>
+                       
+                       <span class="hover:underline cursor-pointer text-gray-500 inline-block"
+                             (click)="reactToComment(comment.id + '-admin', getCommentCurrentReaction(comment.id + '-admin') ? '' : 'LIKE'); $event.stopPropagation()"
+                             (touchstart)="startCommentReactionPress(comment.id + '-admin'); $event.stopPropagation()"
+                             (touchend)="endCommentReactionPress()">
+                         @if (getCommentCurrentReaction(comment.id + '-admin') === 'LOVE') {
+                           <span class="text-red-600 font-bold">J'adore</span>
+                         } @else if (getCommentCurrentReaction(comment.id + '-admin') === 'SUPPORT') {
+                           <span class="text-amber-600 font-bold">Soutien</span>
+                         } @else if (getCommentCurrentReaction(comment.id + '-admin') === 'LIKE') {
+                           <span class="text-blue-600 font-bold">J'aime</span>
+                         } @else {
+                           J'aime
+                         }
+                       </span>
+                     </div>
+                     <span class="font-normal">{{ formatDate(comment.adminReplyAt!) }}</span>
+                   </div>
+                 </div>
+               </div>
+             }
+             
+             <!-- Reply Action for Admins -->
+             @if (authProvider.isAdmin()) {
+             <div class="mt-2 w-full">
+               <button
+                 (click)="toggleReplyBox(comment.id)"
+                 class="text-[12px] text-blue-600 font-bold hover:underline flex items-center gap-1 cursor-pointer ml-3"
+               >
+                 <i class="pi pi-reply text-[10px]"></i>
+                 <span>{{ comment.adminReply ? 'Modifier (Admin)' : 'Répondre (Admin)' }}</span>
+               </button>
+
+               @if (activeReplyId() === comment.id) {
+               <div class="mt-2 flex gap-2 max-w-sm ml-3">
+                 <input
+                   type="text"
+                   [ngModel]="replyTexts()[comment.id] || ''"
+                   (ngModelChange)="updateReplyText(comment.id, $event)"
+                   placeholder="Votre réponse..."
+                   class="flex-1 px-3 py-1.5 bg-white border border-gray-300 rounded-full text-[13px] outline-none shadow-inner"
+                   (keyup.enter)="sendReply(comment.id)"
+                 />
+                 <button
+                   class="text-blue-600 font-bold text-sm px-2.5 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors flex items-center justify-center cursor-pointer shadow-sm border border-gray-200"
+                   (click)="sendReply(comment.id)"
+                 ><i class="pi pi-check"></i></button>
+               </div>
+               }
+             </div>
+             }
+           </div>
+         </div>
+         } @empty {
+           <p class="text-[13px] text-gray-500 text-center py-4 italic font-medium">
+             Aucun commentaire pour le moment.
+           </p>
+         }
+       </div>
     </section>
-    }
+
   </main>
+  }
+
+  @if (showProfileZoom()) {
+    <div class="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center" (click)="showProfileZoom.set(false)">
+      <img [src]="topic?.createdBy?.profile" class="max-h-[90vh] max-w-[90vw] rounded-full shadow-2xl border-4 border-white object-cover" (click)="$event.stopPropagation()" />
+      <button class="absolute top-4 right-4 text-white bg-black/40 hover:bg-black/70 rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors" (click)="showProfileZoom.set(false)">✕</button>
+    </div>
+  }
+
+  @if (viewerVisible() && topicImages().length > 0) {
+    <div class="fixed inset-0 z-[99999] bg-black/95 flex flex-col" (click)="closeViewer()">
+      @if (authProvider.isAdmin()) {
+        <button
+          class="absolute top-5 left-5 z-[100002] w-11 h-11 rounded-full bg-red-600/80 hover:bg-red-600 text-white flex items-center justify-center"
+          title="Supprimer la photo"
+          (click)="deleteCurrentPhoto(); $event.stopPropagation()">
+          <i class="pi pi-trash text-lg"></i>
+        </button>
+      }
+      <button
+        class="absolute top-5 right-5 z-[100002] w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center"
+        (click)="closeViewer(); $event.stopPropagation()">
+        <i class="pi pi-times text-xl"></i>
+      </button>
+      <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-[100002] px-4 py-1.5 rounded-full bg-white/10 text-white text-sm">
+        {{ viewerIndex() + 1 }} / {{ topicImages().length }}
+      </div>
+      @if (topicImages().length > 1) {
+        <button
+          class="absolute left-4 top-1/2 -translate-y-1/2 z-[100002] w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center"
+          (click)="prevImage($event)">
+          <i class="pi pi-chevron-left text-2xl"></i>
+        </button>
+        <button
+          class="absolute right-4 top-1/2 -translate-y-1/2 z-[100002] w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center"
+          (click)="nextImage($event)">
+          <i class="pi pi-chevron-right text-2xl"></i>
+        </button>
+      }
+      <div
+        #photoStrip
+        class="flex-1 min-h-0 flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory photo-strip"
+        (click)="$event.stopPropagation()"
+        (scroll)="onStripScroll($event)"
+        (wheel)="onStripWheel($event)">
+        @for (img of topicImages(); track $index) {
+          <div class="min-w-full h-full snap-center flex items-center justify-center px-16 py-16">
+            <img [src]="img.file_url" class="max-w-full max-h-full object-contain shadow-2xl" />
+          </div>
+        }
+      </div>
+    </div>
   }
 </div>

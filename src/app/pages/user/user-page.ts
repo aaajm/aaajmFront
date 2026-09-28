@@ -1,7 +1,8 @@
 import {UserForm} from '@/app/components/user';
 import {AuthProvider} from '@/app/providers';
-import {labeledRole} from '@/app/utils';
+import {labeledRole, ToastService} from '@/app/utils';
 import {Role, Status, User, UserService} from '@aaajm/client';
+import {HttpClient} from '@angular/common/http';
 import {Component, computed, inject, resource, signal} from '@angular/core';
 import {ConfirmationService, MenuItem} from 'primeng/api';
 import {ButtonModule} from 'primeng/button';
@@ -52,6 +53,7 @@ export class UserPage {
   };
 
   labeledRole = labeledRole;
+
   confirmInvitUser(event: Event, userId: string) {
     event.stopPropagation();
     this.confirmationService.confirm({
@@ -73,6 +75,11 @@ export class UserPage {
       accept: () => {},
     });
   }
+
+  Role = Role;
+  private http = inject(HttpClient);
+  private toast = inject(ToastService);
+
   openDialog = (user?: User | null) => {
     this.selectedUser.set(user || null);
     this.visibleDialog.set(true);
@@ -112,4 +119,31 @@ export class UserPage {
 
     return [];
   });
+
+  isDeletable(user: User) {
+    return user.role !== Role.Admin && user.role !== Role.SuperAdmin;
+  }
+
+  async deleteUser(user: User) {
+    if (!this.isDeletable(user)) return;
+    if (!user?.id) {
+      this.toast.message('error', 'Erreur', "Identifiant de l'utilisateur manquant");
+      return;
+    }
+    if (!confirm(`Voulez-vous vraiment supprimer ${user.firstname} ${user.lastname} ?`)) {
+      return;
+    }
+    try {
+      await firstValueFrom(
+        this.http.delete(
+          `${import.meta.env.NG_APP_API_URL}/users/${encodeURIComponent(user.id)}`,
+          {responseType: 'text'}
+        )
+      );
+      this.toast.message('success', 'Succès', 'Utilisateur supprimé');
+      this.userResource.reload();
+    } catch (err) {
+      console.error('Failed to delete user', err);
+    }
+  }
 }

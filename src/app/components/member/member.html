@@ -1,15 +1,25 @@
 <div
-  class="bg-white p-4 rounded-xl border border-gray-100 flex-col flex w-full max-w-52 md:max-w-xs"
+  class="bg-white p-3 rounded-lg border border-gray-100 flex-col flex w-full max-w-44 sm:max-w-48 md:max-w-56 shadow-sm relative"
 >
-  <div class="relative w-full max-w-xl min-w-36 isolate aspect-[8/5]">
-    <p-image
-      [src]="member?.profile"
-      imageClass="object-cover rounded-xl  w-full"
-      [alt]="member?.firstname"
-    />
+  @if (authProvider.isAdmin() && member?.id) {
+  <button
+    type="button"
+    class="absolute top-2 right-2 z-10 w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center shadow hover:bg-red-700"
+    title="Supprimer le membre"
+    (click)="deleteMember($event)"
+  >
+    <i class="pi pi-trash text-xs"></i>
+  </button>
+  }
+  <div class="relative w-16 h-16 rounded-full overflow-hidden flex-none border border-gray-200 bg-gray-50 flex items-center justify-center mb-2 mx-auto cursor-pointer" (click)="member?.profile && showZoom.set(true)">
+    @if (member?.profile) {
+      <img [src]="member?.profile" class="w-full h-full object-cover hover:scale-110 transition-transform duration-200" [alt]="member?.firstname" />
+    } @else {
+      <i class="pi pi-user text-gray-400 text-2xl"></i>
+    }
   </div>
-  <div class="flex flex-col gap-1">
-    <h4 class="font-bold text-teal-950 text-xl">
+  <div class="flex flex-col gap-1 text-center items-center">
+    <h4 class="font-bold text-teal-950 text-base leading-tight">
       {{member?.firstname || ""}} {{member?.lastname || ""}}
     </h4>
     <span class="font-bold text-orange-700 text-xs"
@@ -27,3 +37,10 @@
     </div>
   </div>
 </div>
+
+@if (showZoom()) {
+  <div class="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center" (click)="showZoom.set(false)">
+    <img [src]="member?.profile" class="max-h-[90vh] max-w-[90vw] rounded-full shadow-2xl border-4 border-white object-cover" [alt]="member?.firstname" (click)="$event.stopPropagation()" />
+    <button class="absolute top-4 right-4 text-white bg-black/40 hover:bg-black/70 rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors" (click)="showZoom.set(false)">✕</button>
+  </div>
+}

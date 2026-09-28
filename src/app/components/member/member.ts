@@ -1,10 +1,11 @@
 import {User} from '@aaajm/client';
-import {Component, Input} from '@angular/core';
-import {Image} from 'primeng/image';
+import {AuthProvider} from '@/app/providers';
+import {CommonModule} from '@angular/common';
+import {Component, EventEmitter, inject, Input, Output, signal} from '@angular/core';
 
 @Component({
   selector: 'app-member',
-  imports: [Image],
+  imports: [CommonModule],
   host: {
     class: 'contents',
   },
@@ -12,4 +13,13 @@ import {Image} from 'primeng/image';
 })
 export class Member {
   @Input({required: true}) member?: User;
+  @Output() deleted = new EventEmitter<string>();
+  authProvider = inject(AuthProvider);
+  showZoom = signal(false);
+
+  deleteMember(event: Event) {
+    event.stopPropagation();
+    if (!this.member?.id || !this.authProvider.isAdmin()) return;
+    this.deleted.emit(this.member.id);
+  }
 }

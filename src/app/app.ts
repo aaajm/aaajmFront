@@ -6,5 +6,8 @@ import {ToastModule} from 'primeng/toast';
   selector: 'app-root',
   imports: [RouterOutlet, ToastModule],
   templateUrl: './app.html',
+  host: {
+    class: 'block min-h-screen',
+  },
 })
 export class App {}

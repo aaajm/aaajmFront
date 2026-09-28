@@ -1,5 +1,6 @@
 import {AuthProvider} from '@/app/providers';
 import {HttpStateService} from '@/app/services';
+import {NavigationService} from '@/app/services/navigation.service';
 import {
   DEFAULT_TOPIC,
   newId,
@@ -18,6 +19,7 @@ import {
   signal,
 } from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {Router} from '@angular/router';
 import {ButtonModule} from 'primeng/button';
 import {EditorModule} from 'primeng/editor';
 import {InputGroup} from 'primeng/inputgroup';
@@ -48,6 +50,8 @@ export class TopicForm {
   files = signal<File[] | null>(null);
   screen = inject(Screen);
   topicState = inject(HttpStateService);
+  private router = inject(Router);
+  private nav = inject(NavigationService);
 
   topicResource = resource({
     params: () => ({id: this.topicId()!}),
@@ -68,8 +72,14 @@ export class TopicForm {
   zodErrors = signal<Record<string, string | null>>({});
 
   onSelectFile(files: File[]) {
-    if (files && files.length > 0)
-      this.files.set(files.map((file) => new File([file], newId())));
+    if (files && files.length > 0) {
+      this.files.set(
+        files.map((file) => {
+          const extension = file.name.split('.').pop() || 'jpg';
+          return new File([file], `${newId()}.${extension}`, {type: file.type});
+        })
+      );
+    }
   }
 
   async submit() {
@@ -83,15 +93,27 @@ export class TopicForm {
 
     if (!parsedValue.success) return;
 
-    await this.topicState.request({
-      request: this.topicService.crupdateTopic(
-        false,
-        {...parsedValue.data, authorId: this.authProvider.currentUser()!.id},
-        this.files()!
-      ),
-      onSuccess: () => {
-        this.toast.message('success', 'Succès', 'Contenu mis à jour');
-      },
-    });
+    const authorId = this.authProvider.currentUser()?.id;
+    if (!authorId) {
+      this.toast.message('error', 'Erreur', 'Vous devez être connecté');
+      return;
+    }
+
+    try {
+      await this.topicState.request({
+        request: this.topicService.crupdateTopic(
+          false,
+          {...parsedValue.data, authorId},
+          this.files() ?? undefined
+        ),
+        onSuccess: () => {
+          this.toast.message('success', 'Succès', 'Contenu mis à jour');
+          this.nav.navigateTo('contenu');
+          this.router.navigate(['/content']);
+        },
+      });
+    } catch {
+      // HttpStateService affiche déjà le toast
+    }
   }
 }

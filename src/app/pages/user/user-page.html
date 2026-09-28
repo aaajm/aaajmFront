@@ -68,6 +68,17 @@
               [outlined]="true"
             />
             }
+            @if (authProvider.isAdmin() && isDeletable(user)) {
+            <p-button
+              icon="pi pi-trash"
+              pTooltip="Supprimer"
+              tooltipPosition="bottom"
+              severity="danger"
+              [rounded]="true"
+              [outlined]="true"
+              (click)="deleteUser(user)"
+            />
+            }
           </td>
         </tr>
       </ng-template>

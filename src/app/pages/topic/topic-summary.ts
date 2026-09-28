@@ -22,7 +22,11 @@ export class TopicSummaryPage {
 
   topics = computed(() => {
     if (this.topicResource.hasValue()) {
-      return this.topicResource.value();
+      return [...this.topicResource.value()].sort((a, b) => {
+        const da = new Date(a.creationDatetime || 0).getTime();
+        const db = new Date(b.creationDatetime || 0).getTime();
+        return db - da;
+      });
     }
 
     return [];

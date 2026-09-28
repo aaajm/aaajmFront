@@ -19,13 +19,18 @@ export class AuthProvider {
     this.savedToken ? JSON.parse(this.savedToken) : null
   );
 
+  redirectUrl: string | null = null;
+
   token = this._token.asReadonly();
   currentUser = this._currentUser.asReadonly();
 
   isLoggedIn = computed(
     () => this.currentUser() != null && this.token() != null
   );
-  isAdmin = computed(() => this.currentUser()?.role == 'SUPER_ADMIN');
+  isAdmin = computed(() => {
+    const role = this.currentUser()?.role;
+    return role === Role.Admin || role === Role.SuperAdmin;
+  });
 
   labeledRole = {
     [Admin]: 'Administrateur',

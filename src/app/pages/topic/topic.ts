@@ -8,13 +8,13 @@ import {firstValueFrom} from 'rxjs';
 
 @Component({
   selector: 'topic-page',
-  imports: [Topic, Skeleton, Banner],
+  imports: [Topic, Skeleton],
   templateUrl: './topic.html',
 })
 export class TopicPage {
   topicService = inject(TopicService);
   topicState = inject(HttpStateService);
-  topicId = input.required<string>();
+  topicId = input<string>();
 
   // TODO: pageable
   topicResource = resource({
@@ -28,7 +28,12 @@ export class TopicPage {
 
   topics = computed(() => {
     if (this.topicResource.hasValue()) {
-      return this.topicResource.value().data || ([] as TopicData[]);
+      const data = this.topicResource.value().data || ([] as TopicData[]);
+      return [...data].sort((a, b) => {
+        const da = new Date(a.creationDatetime || 0).getTime();
+        const db = new Date(b.creationDatetime || 0).getTime();
+        return db - da;
+      });
     }
     return [];
   });

@@ -10,6 +10,7 @@ import {VerifyEmail} from '@/app/pages/verify-email';
 import {AdminGuard} from '@/app/utils';
 import {Routes} from '@angular/router';
 import {PhotoGallery} from './components/photo-gallery/photo-gallery';
+import {ContentLayout} from './pages/content-layout/content-layout';
 import {ChangePassword} from './pages/change-password';
 import {MemberPage} from './pages/member';
 import {UserPage} from './pages/user';
@@ -30,7 +31,7 @@ export const routes: Routes = [
       {path: 'album', component: PhotoGallery},
       {path: 'topic', component: TopicManage, canActivate: [AdminGuard]},
       {path: 'user', component: UserPage, canActivate: [AdminGuard]},
-      {path: 'content', component: TopicPage},
+      {path: 'content', component: ContentLayout},
       {path: 'member', component: MemberPage},
       {path: '**', component: NotFound},
     ],

@@ -1,8 +1,7 @@
-<app-banner></app-banner>
 @if (topicResource.isLoading()) {
 <app-skeleton />
-} @if (!topicResource.isLoading() && topics() == null) {
+} @if (!topicResource.isLoading() && (!topics() || topics().length === 0)) {
 <span class="text-center mx-auto">Aucun contenu</span>
 } @for (item of topics(); track $index) {
-<topic [topic]="item"></topic>
+<topic [topic]="item" (deleted)="topicResource.reload()"></topic>
 }

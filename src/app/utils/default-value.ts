@@ -8,7 +8,7 @@ import {
   Status,
   User,
 } from '@aaajm/client';
-import {safeAddUuid} from './uuid';
+import { safeAddUuid } from './uuid';
 
 export const DEFAULT_PARTNER = () =>
   safeAddUuid({
@@ -21,7 +21,7 @@ export const DEFAULT_PARTNER = () =>
     address: '',
   }) as Partner;
 
-export const DEFAULT_LOGIN = {email: '', password: ''};
+export const DEFAULT_LOGIN = { email: '', password: '' };
 
 export const DEFAULT_TOPIC = () =>
   safeAddUuid({
@@ -52,7 +52,7 @@ export const DEFAULT_USER = () =>
     profile: '',
   }) as User;
 
-export const labeledRole: {[key: string]: string} = {
+export const labeledRole: { [key: string]: string } = {
   [Role.Admin]: 'Administrateur',
   [Role.None]: 'Aucun',
   [Role.SuperAdmin]: 'G.Administrateur',

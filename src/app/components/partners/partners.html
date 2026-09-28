@@ -1,1 +1,68 @@
-<p>partners works!</p>
+@if (partners().length > 0) {
+<section class="py-12 bg-[#F8F9FA] px-10">
+  <div class="container mx-auto">
+    <h2 class="text-4xl font-bold font-serif text-[#D03830] mb-8 tracking-tight">
+      Partenaires
+    </h2>
+
+    <div class="relative flex items-center gap-4">
+      <!-- Prev Button -->
+      <button
+        (click)="prevSlide()"
+        class="flex-shrink-0 w-10 h-10 rounded-full border border-gray-300 bg-white shadow-sm flex items-center justify-center text-gray-500 hover:bg-gray-100 transition cursor-pointer text-2xl font-light"
+        aria-label="Précédent"
+      >
+        &#8249;
+      </button>
+
+      <!-- Cards Viewport -->
+      <div class="flex gap-4 overflow-hidden flex-1">
+        @for (partner of visiblePartners(); track partner.id) {
+        <div
+          class="flex-1 min-w-0 bg-white border border-gray-200 rounded-lg p-6 flex flex-col items-center justify-center gap-3 shadow-sm hover:shadow-md transition"
+        >
+          @if (partner.logo) {
+          <div class="w-20 h-20 rounded-full overflow-hidden border border-gray-200 bg-white flex items-center justify-center flex-none shadow-sm">
+            <img
+              [src]="partner.logo"
+              [alt]="partner.name"
+              class="w-full h-full object-cover"
+            />
+          </div>
+          } @else {
+          <div
+            class="w-20 h-20 rounded-full flex items-center justify-center bg-gray-100 text-gray-400 text-xs font-semibold uppercase tracking-wide text-center border border-gray-200"
+          >
+            {{ partner.name }}
+          </div>
+          }
+          <span class="text-sm text-gray-600 font-semibold text-center">{{ partner.name }}</span>
+        </div>
+        }
+      </div>
+
+      <!-- Next Button -->
+      <button
+        (click)="nextSlide()"
+        class="flex-shrink-0 w-10 h-10 rounded-full border border-gray-300 bg-white shadow-sm flex items-center justify-center text-gray-500 hover:bg-gray-100 transition cursor-pointer text-2xl font-light"
+        aria-label="Suivant"
+      >
+        &#8250;
+      </button>
+    </div>
+
+    <!-- Dots Indicator -->
+    @if (partners().length > visibleCount) {
+    <div class="flex justify-center mt-5 gap-2">
+      @for (dot of partners(); track $index) {
+      <button
+        class="h-2 rounded-full transition-all cursor-pointer {{ $index === currentIndex() ? 'w-4 bg-[#D03830]' : 'w-2 bg-gray-300' }}"
+        (click)="currentIndex.set($index)"
+        [attr.aria-label]="'Page ' + ($index + 1)"
+      ></button>
+      }
+    </div>
+    }
+  </div>
+</section>
+}
