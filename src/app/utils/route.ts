@@ -42,7 +42,7 @@ export const anonymousRoutes: MenuItem[] = [
       },
       {
         routerLink: '/content',
-        label: 'Contenu',
+        label: 'EVENEMENTS',
       },
       {
         routerLink: '/partner',
