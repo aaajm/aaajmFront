@@ -32,7 +32,7 @@
           <td>
             {{current.createdBy.firstname}} {{current.createdBy.lastname}}
           </td>
-          <td>{{formatDate(current.creationDatetime!) ||''}}</td>
+          <td>{{current.creationDatetime! | formatDate}}</td>
           <td>
             <p-button
               icon="pi pi-pencil"

@@ -23,21 +23,35 @@ export function authInterceptor(
       const headers: Record<string, string> = {
         'X-User-Fingerprint': fingerprint,
       };
-      if (token && !request.headers.has('Authorization')) {
+      const isSigninRequest = request.url.includes('/authentication/signin');
+      if (token && !request.headers.has('Authorization') && !isSigninRequest) {
         headers['Authorization'] = `Bearer ${token}`;
       }
       const newReq = request.clone({setHeaders: headers});
 
       return next(newReq).pipe(
         catchError((error: HttpErrorResponse) => {
-          if (error.status === 401) {
+          if (isSigninRequest) {
+            const detailMsg = error.error?.message || "Email ou mot de passe incorrect";
+            toast.add({
+              severity: 'error',
+              summary: 'Échec de connexion',
+              detail: detailMsg,
+            });
+          } else if (error.status === 401 || error.status === 403) {
             authProvider.logout();
+            toast.add({
+              severity: 'error',
+              summary: 'Session expirée',
+              detail: 'Votre session a expiré ou vous n\'avez pas la permission. Veuillez vous reconnecter.',
+            });
+          } else {
+            toast.add({
+              severity: 'error',
+              summary: 'Erreur',
+              detail: error.error?.message || "Une erreur s'est produite, veuillez réessayer",
+            });
           }
-          toast.add({
-            severity: 'error',
-            summary: 'Erreur',
-            detail: "Une erreur s'est produite, veuillez réessayer",
-          });
 
           return throwError(() => error);
         })

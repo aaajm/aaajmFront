@@ -1,6 +1,10 @@
 import {Partner, PartnerService} from '@aaajm/client';
 import {CommonModule} from '@angular/common';
 import {Component, inject, OnInit, signal} from '@angular/core';
+import {AuthProvider} from '@/app/providers';
+import {ToastService} from '@/app/utils';
+import {HttpClient} from '@angular/common/http';
+import {firstValueFrom} from 'rxjs';
 
 @Component({
   selector: 'app-partners',
@@ -11,6 +15,9 @@ import {Component, inject, OnInit, signal} from '@angular/core';
 })
 export class Partners implements OnInit {
   private partnerService = inject(PartnerService);
+  authProvider = inject(AuthProvider);
+  private http = inject(HttpClient);
+  private toast = inject(ToastService);
 
   partners = signal<Partner[]>([]);
   currentIndex = signal(0);
@@ -23,6 +30,19 @@ export class Partners implements OnInit {
       },
       error: (err) => console.error('Failed to load partners', err),
     });
+  }
+
+  async deletePartner(partner: Partner) {
+    if (!this.authProvider.isAdmin()) return;
+    if (!confirm('Voulez-vous vraiment supprimer ce partenaire ?')) return;
+    try {
+      await firstValueFrom(this.http.delete(`${import.meta.env.NG_APP_API_URL}/partners/${partner.id}`));
+      this.toast.message('success', 'Succès', 'Partenaire supprimé');
+      this.partners.update(list => list.filter(p => p.id !== partner.id));
+    } catch(err) {
+      console.error(err);
+      this.toast.message('error', 'Erreur', 'Impossible de supprimer le partenaire');
+    }
   }
 
   nextSlide() {

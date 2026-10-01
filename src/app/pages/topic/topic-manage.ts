@@ -2,17 +2,27 @@ import {TopicForm} from '@/app/components/topic';
 import {AuthProvider} from '@/app/providers';
 import {formatDatetime, ToastService} from '@/app/utils';
 import {TopicService, TopicSummary} from '@aaajm/client';
-import {Component, computed, inject, resource, signal} from '@angular/core';
+import {Component, computed, inject, resource, signal, Pipe, PipeTransform} from '@angular/core';
 import {MenuItem} from 'primeng/api';
 import {ButtonModule} from 'primeng/button';
 import {DialogModule} from 'primeng/dialog';
 import {TableModule} from 'primeng/table';
 import {firstValueFrom} from 'rxjs';
 
+@Pipe({
+  name: 'formatDate',
+  standalone: true
+})
+export class FormatDatePipe implements PipeTransform {
+  transform(value: any): string {
+    return formatDatetime(value) || '';
+  }
+}
+
 @Component({
   selector: 'topic-manage',
   standalone: true,
-  imports: [ButtonModule, TableModule, DialogModule, TopicForm],
+  imports: [ButtonModule, TableModule, DialogModule, TopicForm, FormatDatePipe],
   templateUrl: './topic-manage.html',
 })
 export class TopicManage {
@@ -21,7 +31,6 @@ export class TopicManage {
   asTopic(val: any): TopicSummary {
     return val;
   }
-  formatDate = formatDatetime;
   authProvider = inject(AuthProvider);
   topicService = inject(TopicService);
   private toast = inject(ToastService);

@@ -1,10 +1,5 @@
 import {HttpStateService} from '@/app/services';
-import {
-  DEFAULT_PARTNER,
-  newId,
-  runZodValidation,
-  ToastService,
-} from '@/app/utils';
+import {DEFAULT_PARTNER, runZodValidation, ToastService} from '@/app/utils';
 import {Partner, PartnerService} from '@aaajm/client';
 import {partnerSchema} from '@aaajm/client/zod';
 import {Component, inject, signal} from '@angular/core';
@@ -39,8 +34,7 @@ export class PartnerForm {
   logoFile = signal<File | null>(null);
 
   onSelectLogo(files: File[]) {
-    if (files && files.length > 0)
-      this.logoFile.set(new File([files[0]], newId()));
+    if (files && files.length > 0) this.logoFile.set(files[0]);
   }
 
   async submit() {
@@ -54,16 +48,21 @@ export class PartnerForm {
 
     if (!parsedValue.success) return;
 
-    await this.submitPartnerState.request({
-      request: this.partnerService.addPartner(
-        parsedValue.data! as Partner,
-        this.logoFile() ? this.logoFile()! : undefined
-      ),
-      onSuccess: () => {
-        this.toast.message('success', 'Votre requête est envoyé.');
-        this.toast.message('success', 'On reviendra vers vous.');
-        this.partnerForm.reset(DEFAULT_PARTNER());
-      },
-    });
+    try {
+      await this.submitPartnerState.request({
+        request: this.partnerService.addPartner(
+          parsedValue.data! as Partner,
+          this.logoFile() ? this.logoFile()! : undefined
+        ),
+        onSuccess: () => {
+          this.toast.message('success', 'Votre requête est envoyé.');
+          this.toast.message('success', 'On reviendra vers vous.');
+          this.partnerForm.reset(DEFAULT_PARTNER());
+          this.logoFile.set(null);
+        },
+      });
+    } catch {
+      // HttpStateService already displays the error toast.
+    }
   }
 }
